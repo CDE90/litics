@@ -1,13 +1,14 @@
 import { relations, sql } from "drizzle-orm";
 import {
-  bigint,
-  index,
-  int,
-  mysqlTableCreator,
-  primaryKey,
-  text,
-  timestamp,
-  varchar,
+    bigint,
+    index,
+    int,
+    mysqlTableCreator,
+    primaryKey,
+    text,
+    timestamp,
+    varchar,
+    boolean,
 } from "drizzle-orm/mysql-core";
 import { type AdapterAccount } from "next-auth/adapters";
 
@@ -20,90 +21,144 @@ import { type AdapterAccount } from "next-auth/adapters";
 export const mysqlTable = mysqlTableCreator((name) => `litics_${name}`);
 
 export const posts = mysqlTable(
-  "post",
-  {
-    id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
-    name: varchar("name", { length: 256 }),
-    createdById: varchar("createdById", { length: 255 }).notNull(),
-    createdAt: timestamp("created_at")
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
-    updatedAt: timestamp("updatedAt").onUpdateNow(),
-  },
-  (example) => ({
-    createdByIdIdx: index("createdById_idx").on(example.createdById),
-    nameIndex: index("name_idx").on(example.name),
-  })
+    "post",
+    {
+        id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
+        name: varchar("name", { length: 256 }),
+        createdById: varchar("createdById", { length: 255 }).notNull(),
+        createdAt: timestamp("created_at")
+            .default(sql`CURRENT_TIMESTAMP`)
+            .notNull(),
+        updatedAt: timestamp("updatedAt").onUpdateNow(),
+    },
+    (post) => ({
+        createdByIdIdx: index("createdById_idx").on(post.createdById),
+        nameIndex: index("name_idx").on(post.name),
+    })
 );
 
+export const sites = mysqlTable(
+    "site",
+    {
+        id: varchar("id", { length: 255 }).notNull().primaryKey(),
+        name: varchar("name", { length: 255 }),
+        url: varchar("url", { length: 255 }),
+        createdAt: timestamp("created_at")
+            .default(sql`CURRENT_TIMESTAMP`)
+            .notNull(),
+        updatedAt: timestamp("updated_at").onUpdateNow(),
+    },
+    (site) => ({
+        urlIndex: index("url_idx").on(site.url),
+    })
+);
+
+export const pageviews = mysqlTable(
+    "pageview",
+    {
+        id: varchar("id", { length: 255 }).notNull().primaryKey(),
+        siteId: varchar("site_id", { length: 255 }).notNull(),
+        hostname: varchar("hostname", { length: 255 }).notNull(),
+        pathname: varchar("pathname", { length: 255 }).notNull(),
+        userSignature: varchar("user_signature", { length: 255 }).notNull(),
+        isNewVisit: boolean("is_new_visit").default(true).notNull(),
+        isNewSession: boolean("is_new_session").default(true).notNull(),
+        referrerHostname: varchar("referrer_hostname", { length: 255 }),
+        referrerPathname: varchar("referrer_pathname", { length: 255 }),
+        location: varchar("location", { length: 255 }),
+        screenSize: varchar("screen_size", { length: 255 }),
+        browser: varchar("browser", { length: 255 }),
+        os: varchar("os", { length: 255 }),
+        duration: int("duration").default(0).notNull(),
+        timestamp: timestamp("timestamp")
+            .default(sql`CURRENT_TIMESTAMP`)
+            .notNull(),
+    },
+    (pageview) => ({
+        siteIdIdx: index("site_id_idx").on(pageview.siteId),
+    })
+);
+
+export const sitesRelations = relations(sites, ({ one, many }) => ({
+    owner: one(users, { fields: [sites.id], references: [users.id] }),
+    pageviews: many(pageviews),
+}));
+
+export const pageviewsRelations = relations(pageviews, ({ one }) => ({
+    site: one(sites, { fields: [pageviews.siteId], references: [sites.id] }),
+}));
+
 export const users = mysqlTable("user", {
-  id: varchar("id", { length: 255 }).notNull().primaryKey(),
-  name: varchar("name", { length: 255 }),
-  email: varchar("email", { length: 255 }).notNull(),
-  emailVerified: timestamp("emailVerified", {
-    mode: "date",
-    fsp: 3,
-  }).default(sql`CURRENT_TIMESTAMP(3)`),
-  image: varchar("image", { length: 255 }),
+    id: varchar("id", { length: 255 }).notNull().primaryKey(),
+    name: varchar("name", { length: 255 }),
+    email: varchar("email", { length: 255 }).notNull(),
+    emailVerified: timestamp("emailVerified", {
+        mode: "date",
+        fsp: 3,
+    }).default(sql`CURRENT_TIMESTAMP(3)`),
+    image: varchar("image", { length: 255 }),
 });
 
 export const usersRelations = relations(users, ({ many }) => ({
-  accounts: many(accounts),
+    accounts: many(accounts),
+    sites: many(sites),
 }));
 
 export const accounts = mysqlTable(
-  "account",
-  {
-    userId: varchar("userId", { length: 255 }).notNull(),
-    type: varchar("type", { length: 255 })
-      .$type<AdapterAccount["type"]>()
-      .notNull(),
-    provider: varchar("provider", { length: 255 }).notNull(),
-    providerAccountId: varchar("providerAccountId", { length: 255 }).notNull(),
-    refresh_token: text("refresh_token"),
-    access_token: text("access_token"),
-    expires_at: int("expires_at"),
-    token_type: varchar("token_type", { length: 255 }),
-    scope: varchar("scope", { length: 255 }),
-    id_token: text("id_token"),
-    session_state: varchar("session_state", { length: 255 }),
-  },
-  (account) => ({
-    compoundKey: primaryKey(account.provider, account.providerAccountId),
-    userIdIdx: index("userId_idx").on(account.userId),
-  })
+    "account",
+    {
+        userId: varchar("userId", { length: 255 }).notNull(),
+        type: varchar("type", { length: 255 })
+            .$type<AdapterAccount["type"]>()
+            .notNull(),
+        provider: varchar("provider", { length: 255 }).notNull(),
+        providerAccountId: varchar("providerAccountId", {
+            length: 255,
+        }).notNull(),
+        refresh_token: text("refresh_token"),
+        access_token: text("access_token"),
+        expires_at: int("expires_at"),
+        token_type: varchar("token_type", { length: 255 }),
+        scope: varchar("scope", { length: 255 }),
+        id_token: text("id_token"),
+        session_state: varchar("session_state", { length: 255 }),
+    },
+    (account) => ({
+        compoundKey: primaryKey(account.provider, account.providerAccountId),
+        userIdIdx: index("userId_idx").on(account.userId),
+    })
 );
 
 export const accountsRelations = relations(accounts, ({ one }) => ({
-  user: one(users, { fields: [accounts.userId], references: [users.id] }),
+    user: one(users, { fields: [accounts.userId], references: [users.id] }),
 }));
 
 export const sessions = mysqlTable(
-  "session",
-  {
-    sessionToken: varchar("sessionToken", { length: 255 })
-      .notNull()
-      .primaryKey(),
-    userId: varchar("userId", { length: 255 }).notNull(),
-    expires: timestamp("expires", { mode: "date" }).notNull(),
-  },
-  (session) => ({
-    userIdIdx: index("userId_idx").on(session.userId),
-  })
+    "session",
+    {
+        sessionToken: varchar("sessionToken", { length: 255 })
+            .notNull()
+            .primaryKey(),
+        userId: varchar("userId", { length: 255 }).notNull(),
+        expires: timestamp("expires", { mode: "date" }).notNull(),
+    },
+    (session) => ({
+        userIdIdx: index("userId_idx").on(session.userId),
+    })
 );
 
 export const sessionsRelations = relations(sessions, ({ one }) => ({
-  user: one(users, { fields: [sessions.userId], references: [users.id] }),
+    user: one(users, { fields: [sessions.userId], references: [users.id] }),
 }));
 
 export const verificationTokens = mysqlTable(
-  "verificationToken",
-  {
-    identifier: varchar("identifier", { length: 255 }).notNull(),
-    token: varchar("token", { length: 255 }).notNull(),
-    expires: timestamp("expires", { mode: "date" }).notNull(),
-  },
-  (vt) => ({
-    compoundKey: primaryKey(vt.identifier, vt.token),
-  })
+    "verificationToken",
+    {
+        identifier: varchar("identifier", { length: 255 }).notNull(),
+        token: varchar("token", { length: 255 }).notNull(),
+        expires: timestamp("expires", { mode: "date" }).notNull(),
+    },
+    (vt) => ({
+        compoundKey: primaryKey(vt.identifier, vt.token),
+    })
 );
