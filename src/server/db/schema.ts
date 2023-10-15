@@ -55,6 +55,7 @@ export const pageviews = mysqlTable(
             .default(sql`CURRENT_TIMESTAMP`)
             .notNull(),
         locationId: varchar("location_id", { length: 255 }),
+        hasExited: boolean("has_exited").default(false).notNull(),
     },
     (pageview) => ({
         siteIdIdx: index("site_id_idx").on(pageview.siteId),

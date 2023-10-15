@@ -1,26 +1,68 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 "use strict";
 
 (function () {
+    function applyEventPatch() {
+        // Check if the patch has already been applied
+        if (
+            window.history.pushState.toString().indexOf("locationchange") !== -1
+        ) {
+            return;
+        }
+
+        // eslint-disable-next-line @typescript-eslint/unbound-method
+        let oldPushState = history.pushState;
+        history.pushState = function pushState() {
+            // @ts-ignore
+            let ret = oldPushState.apply(this, arguments);
+            window.dispatchEvent(new Event("pushstate"));
+            window.dispatchEvent(new Event("locationchange"));
+            return ret;
+        };
+
+        // eslint-disable-next-line @typescript-eslint/unbound-method
+        let oldReplaceState = history.replaceState;
+        history.replaceState = function replaceState() {
+            // @ts-ignore
+            let ret = oldReplaceState.apply(this, arguments);
+            window.dispatchEvent(new Event("replacestate"));
+            window.dispatchEvent(new Event("locationchange"));
+            return ret;
+        };
+
+        window.addEventListener("popstate", () => {
+            window.dispatchEvent(new Event("locationchange"));
+        });
+    }
+
     // Function to send data to the API endpoint
     /**
      * @param {Object} data
      */
     function sendData(data) {
-        fetch("http://localhost:3000/api/data", {
+        fetch("http://localhost:3001/api/data", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify(data),
-            mode: "no-cors", // Uncomment this line if you're getting a CORS error
+            mode: "no-cors",
         }).catch((error) => {
             console.error("Error:", error);
         });
     }
 
+    let prevSite = {
+        hostname: window.location.hostname,
+        pathname: window.location.pathname,
+    };
+
     // Function to collect and send pageview data
     function sendPageviewData() {
+        console.log("Sending pageview data...");
+
         const pageviewData = {
+            type: "load",
             site: {
                 hostname: window.location.hostname,
                 pathname: window.location.pathname,
@@ -33,89 +75,96 @@
                     ? new URL(document.referrer).pathname
                     : null,
             },
-            duration: 0, // You can update this when the user leaves the page
             timestamp: new Date().toISOString(),
             screenSize: window.screen.width + "x" + window.screen.height,
         };
 
         sendData(pageviewData);
+
+        applyEventPatch();
     }
 
     // Function to update the duration when the user leaves the page
-    function handlePageUnload() {
+    function handlePageExit() {
+        console.log("Sending exit data...");
+        console.log(prevSite);
+
         // Calculate the time spent on the page
         const currentTime = new Date();
+
         const pageviewData = {
+            type: "exit",
+            site: {
+                hostname: prevSite.hostname,
+                pathname: prevSite.pathname,
+            },
+            timestamp: currentTime.toISOString(),
+        };
+
+        sendData(pageviewData);
+
+        applyEventPatch();
+    }
+
+    // Function to periodically send data for duration calculations
+    function sendPingData() {
+        console.log("Sending ping data...");
+
+        if (prevSite.hostname !== window.location.hostname) {
+            window.dispatchEvent(new Event("locationchange"));
+            return;
+        }
+
+        const currentTime = new Date();
+
+        const pageviewData = {
+            type: "ping",
             site: {
                 hostname: window.location.hostname,
                 pathname: window.location.pathname,
             },
-            referrer: {
-                hostname: document.referrer
-                    ? new URL(document.referrer).hostname
-                    : null,
-                pathname: document.referrer
-                    ? new URL(document.referrer).pathname
-                    : null,
-            },
-            duration: Math.round(
-                (currentTime.getSeconds() - pageLoadTime.getSeconds()) / 1000
-            ), // Calculate duration in seconds
             timestamp: currentTime.toISOString(),
-            screenSize: window.screen.width + "x" + window.screen.height,
         };
 
         sendData(pageviewData);
+
+        applyEventPatch();
     }
 
-    // Function to periodically send data for duration calculations
-    function sendPeriodicData() {
-        // Calculate the time spent on the page since the last ping
-        const currentTime = new Date();
-        const duration = Math.round(
-            (currentTime.getSeconds() - pageLoadTime.getSeconds()) / 1000
-        ); // Calculate duration in seconds
+    applyEventPatch();
 
-        const pageviewData = {
-            site: {
-                hostname: location.hostname,
-                pathname: location.pathname,
-            },
-            referrer: {
-                hostname: document.referrer
-                    ? new URL(document.referrer).hostname
-                    : null,
-                pathname: document.referrer
-                    ? new URL(document.referrer).pathname
-                    : null,
-            },
-            duration: duration,
-            timestamp: currentTime.toISOString(),
-            screenSize: window.screen.width + "x" + window.screen.height,
-        };
-
-        sendData(pageviewData);
-    }
-
-    console.debug("Initializing analytics...");
-
-    // Capture the initial page load time
-    const pageLoadTime = new Date();
+    const scriptStart = new Date();
 
     // Send initial pageview data
     sendPageviewData();
 
-    console.debug("First pageview data sent.");
-
     // Add an event listener to update the duration when the user leaves the page
-    window.addEventListener("beforeunload", handlePageUnload);
+    window.addEventListener("beforeunload", handlePageExit);
 
-    // Listen for hash changes in SPAs
-    window.addEventListener("hashchange", () => {
+    // Listen for location changes
+    window.addEventListener("locationchange", () => {
+        // if the script has only just loaded, don't send exit data
+        if (new Date().getSeconds() - scriptStart.getSeconds() < 1) {
+            return;
+        }
+
+        handlePageExit();
+
         sendPageviewData();
+
+        prevSite = {
+            hostname: window.location.hostname,
+            pathname: window.location.pathname,
+        };
+    });
+
+    // If the page hash changes, send an exit and pageview event
+    window.addEventListener("hashchange", () => {
+        // send the locationchange event
+        window.dispatchEvent(new Event("locationchange"));
     });
 
     // Periodically send data for duration calculations (e.g., every 30 seconds)
     const durationPingInterval = 30000; // 30 seconds
-    setInterval(sendPeriodicData, durationPingInterval);
+    setInterval(sendPingData, durationPingInterval);
 })();

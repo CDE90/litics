@@ -22,28 +22,46 @@ function getBrowser(userAgent: string | null) {
     return "Unknown";
 }
 
-const requestSchema = z.object({
+const props = {
     site: z.object({
         hostname: z.string(),
         pathname: z.string(),
     }),
     referrer: z.object({
-        hostname: z.string(),
-        pathname: z.string(),
+        hostname: z.string().nullable(),
+        pathname: z.string().nullable(),
     }),
-    duration: z.number(),
     timestamp: z.string(),
     screenSize: z.string(),
+};
+
+const typeEnum = z.enum(["load", "ping", "exit"]);
+
+const loadRequestSchema = z.object({
+    type: z.literal(typeEnum.enum.load),
+    ...props,
 });
+
+const pingRequestSchema = z.object({
+    type: z.literal(typeEnum.enum.ping),
+    site: props.site,
+    timestamp: props.timestamp,
+});
+
+const exitRequestSchema = z.object({
+    type: z.literal(typeEnum.enum.exit),
+    site: props.site,
+    timestamp: props.timestamp,
+});
+
+const requestSchema = z.discriminatedUnion("type", [
+    loadRequestSchema,
+    pingRequestSchema,
+    exitRequestSchema,
+]);
 
 export async function POST(request: NextRequest) {
     const res = requestSchema.safeParse(await request.json());
-
-    console.log(res);
-
-    if (!res.success) {
-        console.log(res.error);
-    }
 
     if (!res.success) {
         return NextResponse.json({ success: false, error: res.error });
@@ -59,8 +77,6 @@ export async function POST(request: NextRequest) {
     const city = location?.city;
 
     const ip = request.ip;
-
-    console.log(data);
 
     const userSignature = hash(
         JSON.stringify({
@@ -109,16 +125,24 @@ export async function POST(request: NextRequest) {
             eq(pageviews.userSignature, userSignature),
             eq(pageviews.hostname, data.site.hostname),
             eq(pageviews.pathname, data.site.pathname),
-            gte(pageviews.timestamp, new Date(Date.now() - 1000 * 60 * 30))
+            eq(pageviews.hasExited, false),
+            gte(pageviews.timestamp, new Date(Date.now() - 1000 * 60 * 30)) // 30 minutes
         ),
         orderBy: desc(pageviews.timestamp),
     });
 
     if (pageview) {
+        const duration = Math.floor(
+            (new Date(data.timestamp).getTime() -
+                pageview.timestamp.getTime()) /
+                1000
+        );
+
         await db
             .update(pageviews)
             .set({
-                duration: pageview.duration + data.duration,
+                duration,
+                hasExited: data.type === "exit",
             })
             .where(eq(pageviews.id, pageview.id))
             .execute();
@@ -127,6 +151,16 @@ export async function POST(request: NextRequest) {
 
         const timestamp = new Date(data.timestamp);
 
+        let referrerHostname = null;
+        let referrerPathname = null;
+        let screenSize = null;
+
+        if (data.type === "load") {
+            referrerHostname = data.referrer.hostname;
+            referrerPathname = data.referrer.pathname;
+            screenSize = data.screenSize;
+        }
+
         await db
             .insert(pageviews)
             .values({
@@ -134,52 +168,63 @@ export async function POST(request: NextRequest) {
                 siteId: site.id,
                 hostname: data.site.hostname,
                 pathname: data.site.pathname,
-                referrerHostname: data.referrer.hostname,
-                referrerPathname: data.referrer.pathname,
-                screenSize: data.screenSize,
+                referrerHostname: referrerHostname,
+                referrerPathname: referrerPathname,
+                screenSize: screenSize,
                 browser: getBrowser(userAgent),
                 os: "Unknown",
-                duration: data.duration,
+                duration: 0,
                 timestamp: timestamp,
                 userSignature,
+                hasExited: data.type === "exit",
             })
             .execute();
 
-        const locationFilters = [];
-        if (region) {
-            locationFilters.push(eq(locations.region, region));
-        }
-        if (country) {
-            locationFilters.push(eq(locations.country, country));
-        }
-        if (city) {
-            locationFilters.push(eq(locations.city, city));
-        }
+        if (
+            region !== undefined ||
+            country !== undefined ||
+            city !== undefined
+        ) {
+            const locationFilters = [];
+            if (region) {
+                locationFilters.push(eq(locations.region, region));
+            }
+            if (country) {
+                locationFilters.push(eq(locations.country, country));
+            }
+            if (city) {
+                locationFilters.push(eq(locations.city, city));
+            }
 
-        const location = await db.query.locations
-            .findFirst({
-                where: and(...locationFilters),
-            })
-            .execute();
-
-        if (location) {
-            await db
-                .update(pageviews)
-                .set({
-                    locationId: location.id,
-                })
-                .where(eq(pageviews.id, id))
-                .execute();
-        } else {
-            await db
-                .insert(locations)
-                .values({
-                    id: createId(),
-                    region,
-                    country,
-                    city,
+            const location = await db.query.locations
+                .findFirst({
+                    where: and(...locationFilters),
                 })
                 .execute();
+
+            if (location) {
+                await db
+                    .update(pageviews)
+                    .set({
+                        locationId: location.id,
+                    })
+                    .where(eq(pageviews.id, id))
+                    .execute();
+            } else {
+                await db
+                    .insert(locations)
+                    .values({
+                        id: createId(),
+                        region,
+                        country,
+                        city,
+                    })
+                    .execute();
+            }
         }
     }
+
+    return NextResponse.json({
+        success: true,
+    });
 }

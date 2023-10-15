@@ -1,28 +1,30 @@
-# Create T3 App
+# Litics
+
+Litics is a web analytics tool that I'm building for my A level computer science project.
 
 This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
 
-## What's next? How do I make an app with this?
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+## Notes
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+14/10/2023
+- Initial commit with create-t3-app
+- Added very basic data collecting script (didn't with with SPAs)
+- Initial database schema with pageviews & sites (authentication stuff is already there)
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
-
-## Learn More
-
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
-
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
-
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
-
-## How do I deploy this?
-
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+15/10/2023
+- Added basic API for getting pageviews
+    - Checks if pageview exists, if not, creates it
+    - Associates pageviews with user signatures (SHA-256 hash of user agent, IP, and hostname)
+    - Checks if site exists, if not, creates it (this should be removed and added as UI. If a pageview event doesn't have a site associated, it should be ignored)
+    - Handles locations with separate table
+- Fix issue in testing script where CORS was causing issues
+- Add screen size to API
+- Big script overhauls
+    - Adds new event for locationchange
+    - Splits API with separate load, ping and exit event types
+        - Allows duration to be tracked more accurately (server-side) becuase we can now set a session to hasEnded = true when the user leaves the page
+    - Fix issue with exit payload sending current page data instead of previous page data (causing the pageview to be ended immediately)
+    - Whenever a location change event fires, it will send a page exit event for the previous page and a page load event for the new page
+        - The hashchange event also triggers a location change event
+- Fixed bug with use of new Date().getSeconds() to get durations. This function returns a number 0-59 for the number of seconds past the minute, whereas for duration calculations I need the number of seconds from a fixed point. (changed to .getTime())
