@@ -6,12 +6,13 @@
      * @param {Object} data
      */
     function sendData(data) {
-        fetch("http://localhost/api/data", {
+        fetch("http://localhost:3000/api/data", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify(data),
+            mode: "no-cors", // Uncomment this line if you're getting a CORS error
         }).catch((error) => {
             console.error("Error:", error);
         });
@@ -34,6 +35,7 @@
             },
             duration: 0, // You can update this when the user leaves the page
             timestamp: new Date().toISOString(),
+            screenSize: window.screen.width + "x" + window.screen.height,
         };
 
         sendData(pageviewData);
@@ -56,8 +58,11 @@
                     ? new URL(document.referrer).pathname
                     : null,
             },
-            duration: Math.round((currentTime - pageLoadTime) / 1000), // Calculate duration in seconds
+            duration: Math.round(
+                (currentTime.getSeconds() - pageLoadTime.getSeconds()) / 1000
+            ), // Calculate duration in seconds
             timestamp: currentTime.toISOString(),
+            screenSize: window.screen.width + "x" + window.screen.height,
         };
 
         sendData(pageviewData);
@@ -66,10 +71,12 @@
     // Function to periodically send data for duration calculations
     function sendPeriodicData() {
         // Calculate the time spent on the page since the last ping
-        var currentTime = new Date();
-        var duration = Math.round((currentTime - pageLoadTime) / 1000); // Calculate duration in seconds
+        const currentTime = new Date();
+        const duration = Math.round(
+            (currentTime.getSeconds() - pageLoadTime.getSeconds()) / 1000
+        ); // Calculate duration in seconds
 
-        var pageviewData = {
+        const pageviewData = {
             site: {
                 hostname: location.hostname,
                 pathname: location.pathname,
@@ -84,16 +91,21 @@
             },
             duration: duration,
             timestamp: currentTime.toISOString(),
+            screenSize: window.screen.width + "x" + window.screen.height,
         };
 
         sendData(pageviewData);
     }
+
+    console.debug("Initializing analytics...");
 
     // Capture the initial page load time
     const pageLoadTime = new Date();
 
     // Send initial pageview data
     sendPageviewData();
+
+    console.debug("First pageview data sent.");
 
     // Add an event listener to update the duration when the user leaves the page
     window.addEventListener("beforeunload", handlePageUnload);
@@ -104,6 +116,6 @@
     });
 
     // Periodically send data for duration calculations (e.g., every 30 seconds)
-    var durationPingInterval = 30000; // 30 seconds
+    const durationPingInterval = 30000; // 30 seconds
     setInterval(sendPeriodicData, durationPingInterval);
 })();

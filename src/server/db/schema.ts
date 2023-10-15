@@ -1,6 +1,5 @@
 import { relations, sql } from "drizzle-orm";
 import {
-    bigint,
     index,
     int,
     mysqlTableCreator,
@@ -19,23 +18,6 @@ import { type AdapterAccount } from "next-auth/adapters";
  * @see https://orm.drizzle.team/docs/goodies#multi-project-schema
  */
 export const mysqlTable = mysqlTableCreator((name) => `litics_${name}`);
-
-export const posts = mysqlTable(
-    "post",
-    {
-        id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
-        name: varchar("name", { length: 256 }),
-        createdById: varchar("createdById", { length: 255 }).notNull(),
-        createdAt: timestamp("created_at")
-            .default(sql`CURRENT_TIMESTAMP`)
-            .notNull(),
-        updatedAt: timestamp("updatedAt").onUpdateNow(),
-    },
-    (post) => ({
-        createdByIdIdx: index("createdById_idx").on(post.createdById),
-        nameIndex: index("name_idx").on(post.name),
-    })
-);
 
 export const sites = mysqlTable(
     "site",
@@ -65,7 +47,6 @@ export const pageviews = mysqlTable(
         isNewSession: boolean("is_new_session").default(true).notNull(),
         referrerHostname: varchar("referrer_hostname", { length: 255 }),
         referrerPathname: varchar("referrer_pathname", { length: 255 }),
-        location: varchar("location", { length: 255 }),
         screenSize: varchar("screen_size", { length: 255 }),
         browser: varchar("browser", { length: 255 }),
         os: varchar("os", { length: 255 }),
@@ -73,9 +54,30 @@ export const pageviews = mysqlTable(
         timestamp: timestamp("timestamp")
             .default(sql`CURRENT_TIMESTAMP`)
             .notNull(),
+        locationId: varchar("location_id", { length: 255 }),
     },
     (pageview) => ({
         siteIdIdx: index("site_id_idx").on(pageview.siteId),
+        hostnameIdx: index("hostname_idx").on(pageview.hostname),
+        pathnameIdx: index("pathname_idx").on(pageview.pathname),
+        userSignatureIdx: index("user_signature_idx").on(
+            pageview.userSignature
+        ),
+    })
+);
+
+export const locations = mysqlTable(
+    "location",
+    {
+        id: varchar("id", { length: 255 }).notNull().primaryKey(),
+        region: varchar("region", { length: 255 }),
+        country: varchar("country", { length: 255 }),
+        city: varchar("city", { length: 255 }),
+    },
+    (location) => ({
+        regionIdx: index("region_idx").on(location.region),
+        countryIdx: index("country_idx").on(location.country),
+        cityIdx: index("city_idx").on(location.city),
     })
 );
 
@@ -86,6 +88,14 @@ export const sitesRelations = relations(sites, ({ one, many }) => ({
 
 export const pageviewsRelations = relations(pageviews, ({ one }) => ({
     site: one(sites, { fields: [pageviews.siteId], references: [sites.id] }),
+    location: one(locations, {
+        fields: [pageviews.locationId],
+        references: [locations.id],
+    }),
+}));
+
+export const locationsRelations = relations(locations, ({ many }) => ({
+    pageview: many(pageviews),
 }));
 
 export const users = mysqlTable("user", {
