@@ -28,3 +28,5 @@ This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3
     - Whenever a location change event fires, it will send a page exit event for the previous page and a page load event for the new page
         - The hashchange event also triggers a location change event
 - Fixed bug with use of new Date().getSeconds() to get durations. This function returns a number 0-59 for the number of seconds past the minute, whereas for duration calculations I need the number of seconds from a fixed point. (changed to .getTime())
+
+16/10/2023
