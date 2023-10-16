@@ -16,7 +16,7 @@ function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(" ");
 }
 
-export default function Navbar() {
+export default function Navbar({ loginButton }: { loginButton: JSX.Element }) {
     const pathname = usePathname();
 
     return (
@@ -90,13 +90,7 @@ export default function Navbar() {
                                 </div>
                             </div>
                             <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                                {/* Profile dropdown */}
-                                <Link
-                                    href="/api/auth/signin"
-                                    className="bg-green-600 text-white rounded-md px-3 py-2 text-sm font-medium hover:bg-green-700 transition"
-                                >
-                                    Sign In
-                                </Link>
+                                {loginButton}
                             </div>
                         </div>
                     </div>

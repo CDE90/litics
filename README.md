@@ -35,3 +35,4 @@ This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3
 -   Update navbar to be dynamic (links are different colours depending on if the user is on that page or not)
 -   Add navbar to global template
     -   Add test /get-started page to test navbar
+-   Update login button to be dynamic (also server rendered to prevent session data being refetched)
