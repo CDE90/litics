@@ -4,11 +4,12 @@ import { Disclosure } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const navigation = [
-    { name: "Home", href: "/", current: true },
-    { name: "Get Started", href: "/get-started", current: false },
-    { name: "Dashboard", href: "/dashboard", current: false },
+    { name: "Home", href: "/" },
+    { name: "Get Started", href: "/get-started" },
+    { name: "Dashboard", href: "/dashboard" },
 ];
 
 function classNames(...classes: string[]) {
@@ -16,6 +17,8 @@ function classNames(...classes: string[]) {
 }
 
 export default function Navbar() {
+    const pathname = usePathname();
+
     return (
         <Disclosure as="nav" className="bg-gray-800">
             {({ open }) => (
@@ -44,35 +47,45 @@ export default function Navbar() {
                             </div>
                             <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
                                 <div className="flex flex-shrink-0 items-center">
-                                    <Image
-                                        className="h-8 w-auto"
-                                        src="/logo.svg"
-                                        alt="Image"
-                                        height={32}
-                                        width={32}
-                                    />
+                                    <Link
+                                        href="/"
+                                        className="flex items-center justify-center h-8 w-auto hover:scale-110 transition"
+                                    >
+                                        <Image
+                                            className="w-full h-full"
+                                            src="/logo.svg"
+                                            alt="Image"
+                                            height={32}
+                                            width={32}
+                                        />
+                                    </Link>
                                 </div>
                                 <div className="hidden sm:ml-6 sm:flex sm:justify-center sm:w-full">
                                     <div className="flex space-x-4">
-                                        {navigation.map((item) => (
-                                            <Link
-                                                key={item.name}
-                                                href={item.href}
-                                                className={classNames(
-                                                    item.current
-                                                        ? "bg-gray-900 text-white"
-                                                        : "text-gray-300 hover:bg-gray-700 hover:text-white",
-                                                    "rounded-md px-3 py-2 text-sm font-medium"
-                                                )}
-                                                aria-current={
-                                                    item.current
-                                                        ? "page"
-                                                        : undefined
-                                                }
-                                            >
-                                                {item.name}
-                                            </Link>
-                                        ))}
+                                        {navigation.map((item) => {
+                                            const current =
+                                                pathname === item.href;
+
+                                            return (
+                                                <Link
+                                                    key={item.name}
+                                                    href={item.href}
+                                                    className={classNames(
+                                                        current
+                                                            ? "bg-gray-900 text-white"
+                                                            : "text-gray-300 hover:text-white",
+                                                        "rounded-md px-3 py-2 text-sm font-medium transition hover:bg-gray-700"
+                                                    )}
+                                                    aria-current={
+                                                        current
+                                                            ? "page"
+                                                            : undefined
+                                                    }
+                                                >
+                                                    {item.name}
+                                                </Link>
+                                            );
+                                        })}
                                     </div>
                                 </div>
                             </div>
@@ -80,10 +93,7 @@ export default function Navbar() {
                                 {/* Profile dropdown */}
                                 <Link
                                     href="/api/auth/signin"
-                                    className={classNames(
-                                        "bg-green-600 text-white",
-                                        "rounded-md px-3 py-2 text-sm font-medium"
-                                    )}
+                                    className="bg-green-600 text-white rounded-md px-3 py-2 text-sm font-medium hover:bg-green-700 transition"
                                 >
                                     Sign In
                                 </Link>
@@ -93,24 +103,28 @@ export default function Navbar() {
 
                     <Disclosure.Panel className="sm:hidden">
                         <div className="space-y-1 px-2 pb-3 pt-2">
-                            {navigation.map((item) => (
-                                <Disclosure.Button
-                                    key={item.name}
-                                    as="a"
-                                    href={item.href}
-                                    className={classNames(
-                                        item.current
-                                            ? "bg-gray-900 text-white"
-                                            : "text-gray-300 hover:bg-gray-700 hover:text-white",
-                                        "block rounded-md px-3 py-2 text-base font-medium"
-                                    )}
-                                    aria-current={
-                                        item.current ? "page" : undefined
-                                    }
-                                >
-                                    {item.name}
-                                </Disclosure.Button>
-                            ))}
+                            {navigation.map((item) => {
+                                const current = pathname === item.href;
+
+                                return (
+                                    <Disclosure.Button
+                                        key={item.name}
+                                        as="a"
+                                        href={item.href}
+                                        className={classNames(
+                                            current
+                                                ? "bg-gray-900 text-white"
+                                                : "text-gray-300 hover:text-white",
+                                            "block rounded-md px-3 py-2 text-base font-medium transition hover:bg-gray-700"
+                                        )}
+                                        aria-current={
+                                            current ? "page" : undefined
+                                        }
+                                    >
+                                        {item.name}
+                                    </Disclosure.Button>
+                                );
+                            })}
                         </div>
                     </Disclosure.Panel>
                 </>

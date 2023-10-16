@@ -40,7 +40,7 @@
      * @param {Object} data
      */
     function sendData(data) {
-        fetch("http://localhost:3001/api/data", {
+        fetch("http://localhost:3000/api/data", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
