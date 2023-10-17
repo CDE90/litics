@@ -25,7 +25,9 @@ export default async function RootLayout({
 }) {
     return (
         <html lang="en">
-            <body className={`font-sans ${inter.variable}`}>
+            <body
+                className={`font-sans ${inter.variable} h-screen flex flex-col text-white bg-neutral-800`}
+            >
                 <TRPCReactProvider headers={headers()}>
                     <Navbar loginButton={await LoginButton()} />
                     {children}

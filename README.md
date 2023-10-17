@@ -36,3 +36,9 @@ This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3
 -   Add navbar to global template
     -   Add test /get-started page to test navbar
 -   Update login button to be dynamic (also server rendered to prevent session data being refetched)
+
+17/10/2023
+
+-   Update colour scheme for navbar
+-   Add basic index page
+    -   Basic hero section with title, description, get started button and image

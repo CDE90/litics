@@ -20,7 +20,7 @@ export default function Navbar({ loginButton }: { loginButton: JSX.Element }) {
     const pathname = usePathname();
 
     return (
-        <Disclosure as="nav" className="bg-gray-800">
+        <Disclosure as="nav" className="bg-neutral-900">
             {({ open }) => (
                 <>
                     <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
@@ -72,9 +72,9 @@ export default function Navbar({ loginButton }: { loginButton: JSX.Element }) {
                                                     href={item.href}
                                                     className={classNames(
                                                         current
-                                                            ? "bg-gray-900 text-white"
-                                                            : "text-gray-300 hover:text-white",
-                                                        "rounded-md px-3 py-2 text-sm font-medium transition hover:bg-gray-700"
+                                                            ? "bg-neutral-800 text-white"
+                                                            : "text-neutral-300 hover:text-white",
+                                                        "rounded-md px-3 py-2 text-sm font-medium transition hover:bg-neutral-700"
                                                     )}
                                                     aria-current={
                                                         current
@@ -107,9 +107,9 @@ export default function Navbar({ loginButton }: { loginButton: JSX.Element }) {
                                         href={item.href}
                                         className={classNames(
                                             current
-                                                ? "bg-gray-900 text-white"
-                                                : "text-gray-300 hover:text-white",
-                                            "block rounded-md px-3 py-2 text-base font-medium transition hover:bg-gray-700"
+                                                ? "bg-neutral-800 text-white"
+                                                : "text-neutral-300 hover:text-white",
+                                            "block rounded-md px-3 py-2 text-base font-medium transition hover:bg-neutral-700"
                                         )}
                                         aria-current={
                                             current ? "page" : undefined
