@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
+import Link from "next/link";
 
 const steps = [
     {
@@ -22,7 +23,7 @@ type Step = (typeof steps)[number];
 
 export default function GetStartedPage() {
     const [currentStep, setCurrentStep] = useState<Step>(
-        steps.find((step) => step.name === "Details")!,
+        steps.find((step) => step.name === "Details")!
     );
 
     return (
@@ -40,29 +41,23 @@ export default function GetStartedPage() {
                         return (
                             <li key={step.name} className="md:flex-1">
                                 {done ? (
-                                    <button
-                                        className="group flex w-full cursor-pointer flex-col border-l-4 border-blue-600 py-2 pl-4 hover:border-blue-800 md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4"
-                                        onClick={() => setCurrentStep(step)}
-                                    >
-                                        <span className="text-sm font-medium text-blue-600 group-hover:text-blue-800">
-                                            {step.id}
-                                        </span>
-                                        <span className="text-sm font-medium">
-                                            {step.name}
-                                        </span>
-                                    </button>
-                                ) : current ? (
-                                    <button
-                                        className="flex w-full cursor-pointer flex-col border-l-4 border-blue-600 py-2 pl-4 md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4"
-                                        onClick={() => setCurrentStep(step)}
-                                    >
+                                    <div className="flex w-full flex-col border-l-4 border-blue-600 py-2 pl-4 md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4">
                                         <span className="text-sm font-medium text-blue-600">
                                             {step.id}
                                         </span>
                                         <span className="text-sm font-medium">
                                             {step.name}
                                         </span>
-                                    </button>
+                                    </div>
+                                ) : current ? (
+                                    <div className="flex w-full flex-col border-l-4 border-blue-600 py-2 pl-4 md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4">
+                                        <span className="text-sm font-medium text-blue-600">
+                                            {step.id}
+                                        </span>
+                                        <span className="text-sm font-medium">
+                                            {step.name}
+                                        </span>
+                                    </div>
                                 ) : (
                                     <div className="flex w-full flex-col border-l-4 border-gray-200 py-2 pl-4 md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4">
                                         <span className="text-sm font-medium text-gray-500">
@@ -86,7 +81,7 @@ export default function GetStartedPage() {
                         className="flex flex-row items-center rounded-md border-2 border-neutral-300 px-3 py-2 text-sm font-medium text-white transition hover:bg-neutral-700"
                         onClick={() => {
                             const idx = steps.findIndex(
-                                (step) => step === currentStep,
+                                (step) => step === currentStep
                             );
                             if (idx <= 0) return;
                             setCurrentStep(steps[idx - 1]!);
@@ -103,7 +98,7 @@ export default function GetStartedPage() {
                         className="ml-auto flex flex-row items-center rounded-md border-2 border-blue-600 bg-blue-600 px-3 py-2 text-sm font-medium text-white transition hover:border-blue-700 hover:bg-blue-700"
                         onClick={() => {
                             const idx = steps.findIndex(
-                                (step) => step === currentStep,
+                                (step) => step === currentStep
                             );
                             if (idx >= steps.length - 1) return;
                             setCurrentStep(steps[idx + 1]!);
@@ -112,6 +107,16 @@ export default function GetStartedPage() {
                         Next
                         <ChevronRightIcon className="ml-2 h-5 w-5" />
                     </button>
+                )}
+
+                {/* If on last stage, show done button */}
+                {currentStep === steps[2] && (
+                    <Link
+                        className="ml-auto flex flex-row items-center rounded-md border-2 border-blue-600 bg-blue-600 px-3 py-2 text-sm font-medium text-white transition hover:border-blue-700 hover:bg-blue-700"
+                        href="/dashboard"
+                    >
+                        Done
+                    </Link>
                 )}
             </div>
         </main>
