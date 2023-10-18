@@ -3,20 +3,20 @@ import Link from "next/link";
 
 export default function Home() {
     return (
-        <main className="flex flex-col items-center justify-center h-full px-8">
-            <div className="flex flex-col md:flex-row max-w-7xl py-2 sm:py-6 lg:py-8 gap-16">
+        <main className="flex h-full flex-col items-center justify-center px-8">
+            <div className="flex max-w-7xl flex-col gap-16 py-2 sm:py-6 md:flex-row lg:py-8">
                 <div>
-                    <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem] mb-8">
+                    <h1 className="mb-8 text-5xl font-extrabold tracking-tight sm:text-[5rem]">
                         Litics
                     </h1>
-                    <p className="text-2xl text-white mb-8">
+                    <p className="mb-8 text-2xl text-white">
                         An easy-to-use analytics engine for
                         <br />
                         your website
                     </p>
                     <Link
                         href="/get-started"
-                        className="bg-green-600 text-white rounded-md px-3 py-2 text-lg font-medium hover:bg-green-700 transition"
+                        className="rounded-md bg-blue-600 px-3 py-2 text-lg font-medium text-white transition hover:bg-blue-700"
                     >
                         Get Started!
                     </Link>

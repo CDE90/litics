@@ -8,7 +8,7 @@ export default async function LoginButton() {
         return (
             <Link
                 href="/api/auth/signin"
-                className="bg-green-600 text-white rounded-md px-3 py-2 text-sm font-medium hover:bg-green-700 transition"
+                className="rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-blue-700"
             >
                 Sign In
             </Link>
@@ -17,7 +17,7 @@ export default async function LoginButton() {
         return (
             <Link
                 href="/api/auth/signout"
-                className="bg-green-600 text-white rounded-md px-3 py-2 text-sm font-medium hover:bg-green-700 transition"
+                className="rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-blue-700"
             >
                 Sign Out
             </Link>

@@ -42,3 +42,10 @@ This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3
 -   Update colour scheme for navbar
 -   Add basic index page
     -   Basic hero section with title, description, get started button and image
+
+18/10/2023
+
+-   Add skeleton for getting started page
+    -   Tabs at top
+    -   Buttons for navigating between tabs
+-   Update green buttons to be blue
