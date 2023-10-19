@@ -1,8 +1,11 @@
 import Link from "next/link";
-import { getServerAuthSession } from "~/server/auth";
+import { auth } from "~/server/auth";
 
 export default async function LoginButton() {
-    const session = await getServerAuthSession();
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+    const session = await auth();
+
+    console.log(session);
 
     if (!session) {
         return (

@@ -12,7 +12,7 @@ import { type NextRequest } from "next/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
-import { getServerAuthSession } from "~/server/auth";
+import { auth } from "~/server/auth";
 import { db } from "~/server/db";
 
 /**
@@ -38,9 +38,11 @@ interface CreateContextOptions {
  * @see https://create.t3.gg/en/usage/trpc#-serverapitrpcts
  */
 export const createInnerTRPCContext = async (opts: CreateContextOptions) => {
-    const session = await getServerAuthSession();
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+    const session = await auth();
 
     return {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         session,
         headers: opts.headers,
         db,
@@ -110,12 +112,14 @@ export const publicProcedure = t.procedure;
 
 /** Reusable middleware that enforces users are logged in before running the procedure. */
 const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
-    if (!ctx.session || !ctx.session.user) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    if (!ctx.session?.user) {
         throw new TRPCError({ code: "UNAUTHORIZED" });
     }
     return next({
         ctx: {
             // infers the `session` as non-nullable
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
             session: { ...ctx.session, user: ctx.session.user },
         },
     });

@@ -49,3 +49,9 @@ This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3
     -   Tabs at top
     -   Buttons for navigating between tabs
 -   Update green buttons to be blue
+
+19/10/2023
+
+-   Update nextauth to v5 (experimental)
+-   Make all routes use edge runtime
+-   Update /api/data route to use browser crypto.subtle to hash

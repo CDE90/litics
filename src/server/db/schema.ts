@@ -9,7 +9,8 @@ import {
     varchar,
     boolean,
 } from "drizzle-orm/mysql-core";
-import { type AdapterAccount } from "next-auth/adapters";
+// import { type AdapterAccount } from "next-auth/adapters";
+import type { AdapterAccount } from "@auth/core/adapters";
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
@@ -32,7 +33,7 @@ export const sites = mysqlTable(
     },
     (site) => ({
         urlIndex: index("url_idx").on(site.url),
-    })
+    }),
 );
 
 export const pageviews = mysqlTable(
@@ -62,9 +63,9 @@ export const pageviews = mysqlTable(
         hostnameIdx: index("hostname_idx").on(pageview.hostname),
         pathnameIdx: index("pathname_idx").on(pageview.pathname),
         userSignatureIdx: index("user_signature_idx").on(
-            pageview.userSignature
+            pageview.userSignature,
         ),
-    })
+    }),
 );
 
 export const locations = mysqlTable(
@@ -79,7 +80,7 @@ export const locations = mysqlTable(
         regionIdx: index("region_idx").on(location.region),
         countryIdx: index("country_idx").on(location.country),
         cityIdx: index("city_idx").on(location.city),
-    })
+    }),
 );
 
 export const sitesRelations = relations(sites, ({ one, many }) => ({
@@ -137,7 +138,7 @@ export const accounts = mysqlTable(
     (account) => ({
         compoundKey: primaryKey(account.provider, account.providerAccountId),
         userIdIdx: index("userId_idx").on(account.userId),
-    })
+    }),
 );
 
 export const accountsRelations = relations(accounts, ({ one }) => ({
@@ -155,7 +156,7 @@ export const sessions = mysqlTable(
     },
     (session) => ({
         userIdIdx: index("userId_idx").on(session.userId),
-    })
+    }),
 );
 
 export const sessionsRelations = relations(sessions, ({ one }) => ({
@@ -171,5 +172,5 @@ export const verificationTokens = mysqlTable(
     },
     (vt) => ({
         compoundKey: primaryKey(vt.identifier, vt.token),
-    })
+    }),
 );

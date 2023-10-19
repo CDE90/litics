@@ -1,13 +1,21 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
-import { createHash } from "crypto";
 import { db } from "~/server/db";
 import { eq, and, desc, gte } from "drizzle-orm";
 import { locations, pageviews, sites } from "~/server/db/schema";
 import { createId } from "@paralleldrive/cuid2";
 
-function hash(str: string) {
-    return createHash("sha256").update(str).digest("hex");
+async function hash(str: string) {
+    const hashBuffer = await crypto.subtle.digest(
+        "SHA-256",
+        new TextEncoder().encode(str),
+    );
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray
+        .map((b) => b.toString(16).padStart(2, "0"))
+        .join("");
+    return hashHex;
+    // return createHash("sha256").update(str).digest("hex");
 }
 
 function getBrowser(userAgent: string | null) {
@@ -78,12 +86,12 @@ export async function POST(request: NextRequest) {
 
     const ip = request.ip;
 
-    const userSignature = hash(
+    const userSignature = await hash(
         JSON.stringify({
             ip: ip,
             userAgent,
             hostname: data.site.hostname,
-        })
+        }),
     );
 
     // get site
@@ -126,7 +134,7 @@ export async function POST(request: NextRequest) {
             eq(pageviews.hostname, data.site.hostname),
             eq(pageviews.pathname, data.site.pathname),
             eq(pageviews.hasExited, false),
-            gte(pageviews.timestamp, new Date(Date.now() - 1000 * 60 * 30)) // 30 minutes
+            gte(pageviews.timestamp, new Date(Date.now() - 1000 * 60 * 30)), // 30 minutes
         ),
         orderBy: desc(pageviews.timestamp),
     });
@@ -135,7 +143,7 @@ export async function POST(request: NextRequest) {
         const duration = Math.floor(
             (new Date(data.timestamp).getTime() -
                 pageview.timestamp.getTime()) /
-                1000
+                1000,
         );
 
         await db
@@ -228,3 +236,5 @@ export async function POST(request: NextRequest) {
         success: true,
     });
 }
+
+export const runtime = "edge";

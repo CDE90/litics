@@ -23,7 +23,7 @@ type Step = (typeof steps)[number];
 
 export default function GetStartedPage() {
     const [currentStep, setCurrentStep] = useState<Step>(
-        steps.find((step) => step.name === "Details")!
+        steps.find((step) => step.name === "Details")!,
     );
 
     return (
@@ -81,7 +81,7 @@ export default function GetStartedPage() {
                         className="flex flex-row items-center rounded-md border-2 border-neutral-300 px-3 py-2 text-sm font-medium text-white transition hover:bg-neutral-700"
                         onClick={() => {
                             const idx = steps.findIndex(
-                                (step) => step === currentStep
+                                (step) => step === currentStep,
                             );
                             if (idx <= 0) return;
                             setCurrentStep(steps[idx - 1]!);
@@ -98,7 +98,7 @@ export default function GetStartedPage() {
                         className="ml-auto flex flex-row items-center rounded-md border-2 border-blue-600 bg-blue-600 px-3 py-2 text-sm font-medium text-white transition hover:border-blue-700 hover:bg-blue-700"
                         onClick={() => {
                             const idx = steps.findIndex(
-                                (step) => step === currentStep
+                                (step) => step === currentStep,
                             );
                             if (idx >= steps.length - 1) return;
                             setCurrentStep(steps[idx + 1]!);

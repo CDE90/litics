@@ -26,7 +26,7 @@ export default async function RootLayout({
     return (
         <html lang="en">
             <body
-                className={`font-sans ${inter.variable} h-screen flex flex-col text-white bg-neutral-800`}
+                className={`font-sans ${inter.variable} flex h-screen flex-col bg-neutral-800 text-white`}
             >
                 <TRPCReactProvider headers={headers()}>
                     <Navbar loginButton={await LoginButton()} />
@@ -36,3 +36,5 @@ export default async function RootLayout({
         </html>
     );
 }
+
+export const runtime = "edge";
