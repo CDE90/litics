@@ -50,4 +50,8 @@ export const {
             };
         },
     },
+    theme: {
+        logo: "https://litics.ecwrd.com/logo.svg",
+        brandColor: "#000000",
+    },
 });
