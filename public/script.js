@@ -40,7 +40,8 @@
      * @param {Object} data
      */
     function sendData(data) {
-        fetch("https://litics.ecwrd.com/api/data", {
+        // fetch("https://litics.ecwrd.com/api/data", {
+        fetch("http://localhost:3000/api/data", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -139,7 +140,10 @@
     sendPageviewData();
 
     // Add an event listener to update the duration when the user leaves the page
-    window.addEventListener("beforeunload", handlePageExit);
+    window.addEventListener("beforeunload", () => {
+        console.log("beforeunload");
+        handlePageExit();
+    });
 
     // Listen for location changes
     window.addEventListener("locationchange", () => {
@@ -147,6 +151,8 @@
         if (new Date().getSeconds() - scriptStart.getSeconds() < 1) {
             return;
         }
+
+        console.log("locationchange");
 
         handlePageExit();
 
@@ -158,11 +164,12 @@
         };
     });
 
-    // // If the page hash changes, send an exit and pageview event
-    // window.addEventListener("hashchange", () => {
-    //     // send the locationchange event
-    //     window.dispatchEvent(new Event("locationchange"));
-    // });
+    // If the page hash changes, send an exit and pageview event
+    window.addEventListener("hashchange", () => {
+        console.log("hashchange");
+        // send the locationchange event
+        window.dispatchEvent(new Event("locationchange"));
+    });
 
     // Periodically send data for duration calculations (e.g., every 30 seconds)
     const durationPingInterval = 30000; // 30 seconds
