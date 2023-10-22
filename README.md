@@ -71,3 +71,5 @@ This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3
     -   Add site deletion functionality
     -   Add site editing functionality
     -   Add dashboard page
+-   Fix issue with /api/data attempting to create a new site automatically. This should be done on the /get-started page
+    -   The endpoint will return a 404 if the site doesn't exist.

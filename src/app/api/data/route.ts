@@ -95,37 +95,18 @@ export async function POST(request: NextRequest) {
     );
 
     // get site
-    let site = await db.query.sites.findFirst({
+    const site = await db.query.sites.findFirst({
         where: eq(sites.url, data.site.hostname),
     });
 
     if (!site) {
-        // return NextResponse.json({
-        //     success: false,
-        //     error: "Site not found",
-        // });
-
-        // for now, create the site
-        await db
-            .insert(sites)
-            .values({
-                id: createId(),
-                name: data.site.hostname,
-                url: data.site.hostname,
-            })
-            .execute();
-
-        // get site
-        site = await db.query.sites.findFirst({
-            where: eq(sites.url, data.site.hostname),
-        });
-
-        if (!site) {
-            return NextResponse.json({
+        return NextResponse.json(
+            {
                 success: false,
                 error: "Site not found",
-            });
-        }
+            },
+            { status: 404 },
+        );
     }
 
     const pageview = await db.query.pageviews.findFirst({
