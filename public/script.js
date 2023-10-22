@@ -40,8 +40,8 @@
      * @param {Object} data
      */
     function sendData(data) {
-        // fetch("https://litics.ecwrd.com/api/data", {
-        fetch("http://localhost:3000/api/data", {
+        fetch("https://litics.ecwrd.com/api/data", {
+            // fetch("http://localhost:3000/api/data", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -60,7 +60,11 @@
 
     // Function to collect and send pageview data
     function sendPageviewData() {
-        console.log("Sending pageview data...");
+        console.log(
+            "Sending pageview data... " +
+                window.location.hostname +
+                window.location.pathname,
+        );
 
         const pageviewData = {
             type: "load",
@@ -87,10 +91,14 @@
 
     // Function to update the duration when the user leaves the page
     function handlePageExit() {
-        console.log("Sending exit data...");
-        console.log(prevSite);
+        console.log(
+            "Sending exit data... " + prevSite.hostname + prevSite.pathname,
+        );
 
-        // Calculate the time spent on the page
+        if (prevSite.pathname === window.location.pathname) {
+            return;
+        }
+
         const currentTime = new Date();
 
         const pageviewData = {
@@ -109,7 +117,11 @@
 
     // Function to periodically send data for duration calculations
     function sendPingData() {
-        console.log("Sending ping data...");
+        console.log(
+            "Sending ping data... " +
+                window.location.hostname +
+                window.location.pathname,
+        );
 
         if (prevSite.hostname !== window.location.hostname) {
             window.dispatchEvent(new Event("locationchange"));
@@ -140,19 +152,14 @@
     sendPageviewData();
 
     // Add an event listener to update the duration when the user leaves the page
-    window.addEventListener("beforeunload", () => {
-        console.log("beforeunload");
-        handlePageExit();
-    });
+    window.addEventListener("beforeunload", () => handlePageExit);
 
     // Listen for location changes
     window.addEventListener("locationchange", () => {
         // if the script has only just loaded, don't send exit data
-        if (new Date().getSeconds() - scriptStart.getSeconds() < 1) {
+        if (new Date().getTime() - scriptStart.getTime() < 1 * 1000) {
             return;
         }
-
-        console.log("locationchange");
 
         handlePageExit();
 
@@ -166,7 +173,6 @@
 
     // If the page hash changes, send an exit and pageview event
     window.addEventListener("hashchange", () => {
-        console.log("hashchange");
         // send the locationchange event
         window.dispatchEvent(new Event("locationchange"));
     });
