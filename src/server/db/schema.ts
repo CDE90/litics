@@ -26,6 +26,7 @@ export const sites = mysqlTable(
         id: varchar("id", { length: 255 }).notNull().primaryKey(),
         name: varchar("name", { length: 255 }),
         url: varchar("url", { length: 255 }),
+        userId: varchar("user_id", { length: 255 }).notNull(),
         createdAt: timestamp("created_at")
             .default(sql`CURRENT_TIMESTAMP`)
             .notNull(),
@@ -84,7 +85,7 @@ export const locations = mysqlTable(
 );
 
 export const sitesRelations = relations(sites, ({ one, many }) => ({
-    owner: one(users, { fields: [sites.id], references: [users.id] }),
+    owner: one(users, { fields: [sites.userId], references: [users.id] }),
     pageviews: many(pageviews),
 }));
 

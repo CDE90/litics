@@ -60,3 +60,14 @@ This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3
 20/10/2023
 
 -   Add ui and input options to /get-started page
+
+22/10/2023
+
+-   Add functionality to /get-started page so that it can create a site and redirect to the dashboard
+    -   Fix issue with get request being sent whenever site url input is changed
+-   TODO:
+    -   Add error handling for invalid site url
+    -   Add number of sites restriction? maybe limit to 5 sites per user?
+    -   Add site deletion functionality
+    -   Add site editing functionality
+    -   Add dashboard page
