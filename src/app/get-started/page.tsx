@@ -114,10 +114,18 @@ export default function GetStartedPage() {
 
             {/* Render the current step */}
             {currentStep === steps[0] && (
-                <div className="mx-auto mt-8 flex flex-col">
+                <div className="mx-auto mt-8 flex flex-col items-center">
                     <h1 className="text-3xl font-bold">
                         Enter Website Details
                     </h1>
+                    <p className="mt-4 max-w-2xl text-center text-sm">
+                        Enter the URL of your website and a name for it. This
+                        will be used to identify your website in the dashboard.
+                        <br />
+                        <br />
+                        If your website starts with <code>www.</code>, please
+                        include that in the URL.
+                    </p>
                     <div className="mt-8 flex flex-col items-center gap-8">
                         <div className="flex flex-row items-center">
                             <label

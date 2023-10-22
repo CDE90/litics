@@ -76,3 +76,4 @@ This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3
 -   Update script so hashchange doesn't trigger another locationchange event
 -   Revert previous script change (hashchange should trigger locationchange event)
 -   Add extra check to script for exit event to ensure data is only sent when the page is being exited (prev page is not the same as current page)
+-   Added extra check to script for page load event to ensure data is only sent once per page load
