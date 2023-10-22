@@ -56,3 +56,7 @@ This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3
 -   Make all routes use edge runtime
 -   Update /api/data route to use browser crypto.subtle to hash
 -   Make /get-started and /dashboard pages protected (redirect to login if not logged in)
+
+20/10/2023
+
+-   Add ui and input options to /get-started page

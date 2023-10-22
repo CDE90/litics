@@ -5,8 +5,6 @@ export default async function LoginButton() {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
     const session = await auth();
 
-    console.log(session);
-
     if (!session) {
         return (
             <Link
