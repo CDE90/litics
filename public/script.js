@@ -92,7 +92,12 @@
     // Function to update the duration when the user leaves the page
     function handlePageExit() {
         console.log(
-            "Sending exit data... " + prevSite.hostname + prevSite.pathname,
+            "Sending exit data... " +
+                prevSite.hostname +
+                prevSite.pathname +
+                " -> " +
+                window.location.hostname +
+                window.location.pathname,
         );
 
         if (prevSite.pathname === window.location.pathname) {
