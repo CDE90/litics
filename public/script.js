@@ -53,13 +53,23 @@
         });
     }
 
-    let prevSite = {
+    let prevPage = {
         hostname: window.location.hostname,
         pathname: window.location.pathname,
     };
 
+    /** @type {{hostname: null | string, pathname: null | string}} */
+    let lastPageLoad = {
+        hostname: null,
+        pathname: null,
+    };
+
     // Function to collect and send pageview data
     function sendPageviewData() {
+        if (lastPageLoad.pathname === window.location.pathname) {
+            return;
+        }
+
         console.log(
             "Sending pageview data... " +
                 window.location.hostname +
@@ -87,18 +97,23 @@
         sendData(pageviewData);
 
         applyEventPatch();
+
+        lastPageLoad = {
+            hostname: window.location.hostname,
+            pathname: window.location.pathname,
+        };
     }
 
     // Function to update the duration when the user leaves the page
     function handlePageExit() {
-        if (prevSite.pathname === window.location.pathname) {
+        if (prevPage.pathname === window.location.pathname) {
             return;
         }
 
         console.log(
             "Sending exit data... " +
-                prevSite.hostname +
-                prevSite.pathname +
+                prevPage.hostname +
+                prevPage.pathname +
                 " -> " +
                 window.location.hostname +
                 window.location.pathname,
@@ -109,8 +124,8 @@
         const pageviewData = {
             type: "exit",
             site: {
-                hostname: prevSite.hostname,
-                pathname: prevSite.pathname,
+                hostname: prevPage.hostname,
+                pathname: prevPage.pathname,
             },
             timestamp: currentTime.toISOString(),
         };
@@ -118,6 +133,11 @@
         sendData(pageviewData);
 
         applyEventPatch();
+
+        prevPage = {
+            hostname: window.location.hostname,
+            pathname: window.location.pathname,
+        };
     }
 
     // Function to periodically send data for duration calculations
@@ -128,7 +148,7 @@
                 window.location.pathname,
         );
 
-        if (prevSite.hostname !== window.location.hostname) {
+        if (prevPage.hostname !== window.location.hostname) {
             window.dispatchEvent(new Event("locationchange"));
             return;
         }
@@ -169,11 +189,6 @@
         handlePageExit();
 
         sendPageviewData();
-
-        prevSite = {
-            hostname: window.location.hostname,
-            pathname: window.location.pathname,
-        };
     });
 
     // If the page hash changes, send an exit and pageview event
