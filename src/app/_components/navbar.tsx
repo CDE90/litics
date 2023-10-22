@@ -20,7 +20,10 @@ export default function Navbar({ loginButton }: { loginButton: JSX.Element }) {
     const pathname = usePathname();
 
     return (
-        <Disclosure as="nav" className="bg-neutral-900">
+        <Disclosure
+            as="nav"
+            className="sticky top-0 z-40 bg-neutral-900 shadow-md"
+        >
             {({ open }) => (
                 <>
                     <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
@@ -49,10 +52,10 @@ export default function Navbar({ loginButton }: { loginButton: JSX.Element }) {
                                 <div className="flex flex-shrink-0 items-center">
                                     <Link
                                         href="/"
-                                        className="flex items-center justify-center h-8 w-auto hover:scale-110 transition"
+                                        className="flex h-8 w-auto items-center justify-center transition hover:scale-110"
                                     >
                                         <Image
-                                            className="w-full h-full"
+                                            className="h-full w-full"
                                             src="/logo.svg"
                                             alt="Image"
                                             height={32}
@@ -60,7 +63,7 @@ export default function Navbar({ loginButton }: { loginButton: JSX.Element }) {
                                         />
                                     </Link>
                                 </div>
-                                <div className="hidden sm:ml-6 sm:flex sm:justify-center sm:w-full">
+                                <div className="hidden sm:ml-6 sm:flex sm:w-full sm:justify-center">
                                     <div className="flex space-x-4">
                                         {navigation.map((item) => {
                                             const current =
@@ -74,7 +77,7 @@ export default function Navbar({ loginButton }: { loginButton: JSX.Element }) {
                                                         current
                                                             ? "bg-neutral-800 text-white"
                                                             : "text-neutral-300 hover:text-white",
-                                                        "rounded-md px-3 py-2 text-sm font-medium transition hover:bg-neutral-700"
+                                                        "rounded-md px-3 py-2 text-sm font-medium transition hover:bg-neutral-700",
                                                     )}
                                                     aria-current={
                                                         current
@@ -109,7 +112,7 @@ export default function Navbar({ loginButton }: { loginButton: JSX.Element }) {
                                             current
                                                 ? "bg-neutral-800 text-white"
                                                 : "text-neutral-300 hover:text-white",
-                                            "block rounded-md px-3 py-2 text-base font-medium transition hover:bg-neutral-700"
+                                            "block rounded-md px-3 py-2 text-base font-medium transition hover:bg-neutral-700",
                                         )}
                                         aria-current={
                                             current ? "page" : undefined

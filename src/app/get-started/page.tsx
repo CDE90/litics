@@ -65,7 +65,7 @@ export default function GetStartedPage() {
     }, [siteExists.data]);
 
     return (
-        <main className="mx-auto mt-8 flex h-full w-full max-w-7xl flex-col px-8">
+        <main className="mx-auto mt-8 flex w-full max-w-7xl flex-grow flex-col px-8">
             <nav aria-label="Progress" className="w-full">
                 <ol
                     role="list"

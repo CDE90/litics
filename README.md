@@ -77,3 +77,12 @@ This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3
 -   Revert previous script change (hashchange should trigger locationchange event)
 -   Add extra check to script for exit event to ensure data is only sent when the page is being exited (prev page is not the same as current page)
 -   Added extra check to script for page load event to ensure data is only sent once per page load
+-   Start work on layout for dashboard page
+    -   Add sidebar...
+        -   This took way longer than it should have
+        -   I had to mess around with tailwind classes for ages to make sure the top section of the sidebar didn't merge into the navbar when you scroll down
+        -   One good thing about the sidebar is that it's responsive, so on smaller screens it gives a hamburger menu which can be pressed to open the sidebar over the top of the page
+    -   Apply basic styling to sidebar for now
+    -   Add user profile section at bottom of sidebar
+    -   Also required to change base layout to use min-h-screen which then needed other pages to have flex-grow to fit the screen properly
+    -   Main navbar also became sticky on all pages with a little shadow
