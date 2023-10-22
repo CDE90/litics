@@ -158,11 +158,11 @@
         };
     });
 
-    // If the page hash changes, send an exit and pageview event
-    window.addEventListener("hashchange", () => {
-        // send the locationchange event
-        window.dispatchEvent(new Event("locationchange"));
-    });
+    // // If the page hash changes, send an exit and pageview event
+    // window.addEventListener("hashchange", () => {
+    //     // send the locationchange event
+    //     window.dispatchEvent(new Event("locationchange"));
+    // });
 
     // Periodically send data for duration calculations (e.g., every 30 seconds)
     const durationPingInterval = 30000; // 30 seconds
