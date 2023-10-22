@@ -91,6 +91,10 @@
 
     // Function to update the duration when the user leaves the page
     function handlePageExit() {
+        if (prevSite.pathname === window.location.pathname) {
+            return;
+        }
+
         console.log(
             "Sending exit data... " +
                 prevSite.hostname +
@@ -99,10 +103,6 @@
                 window.location.hostname +
                 window.location.pathname,
         );
-
-        if (prevSite.pathname === window.location.pathname) {
-            return;
-        }
 
         const currentTime = new Date();
 
