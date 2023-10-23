@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import {
     Bars3Icon,
@@ -14,6 +14,9 @@ import {
 } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import Link from "next/link";
+import SiteDropdown from "../_components/site-selector";
+import { api } from "~/trpc/react";
+import { type sites } from "~/server/db/schema";
 
 const navigation = [
     { name: "Dashboard", href: "#", icon: HomeIcon, current: true },
@@ -33,6 +36,8 @@ function classNames(...classes: string[]) {
     return classes.filter(Boolean).join(" ");
 }
 
+type Site = typeof sites.$inferSelect;
+
 export default function DashboardLayoutComponent({
     children,
     username,
@@ -43,6 +48,16 @@ export default function DashboardLayoutComponent({
     userIcon: string | null | undefined;
 }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
+
+    const [selectedSite, setSelectedSite] = useState<Site | null>(null);
+    const sites = api.site.getSites.useQuery();
+
+    useEffect(() => {
+        // whenever sites.data changes and selectedSite is null, select the first site
+        if (sites.data && !selectedSite) {
+            setSelectedSite(sites.data[0] ?? null);
+        }
+    }, [sites.data, selectedSite]);
 
     return (
         <div className="flex flex-row">
@@ -103,8 +118,14 @@ export default function DashboardLayoutComponent({
                                     </div>
                                 </Transition.Child>
                                 {/* Sidebar component, swap this element with another sidebar if you like */}
-                                <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-neutral-900 px-6 pb-2">
-                                    <nav className="mt-4 flex flex-1 flex-col">
+                                <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-neutral-900 pb-2">
+                                    <div className="w-full border-b border-neutral-700 px-4 py-4">
+                                        <SiteDropdown
+                                            sites={sites.data ?? []}
+                                            selectedID={selectedSite?.id ?? ""}
+                                        />
+                                    </div>
+                                    <nav className="mt-2 flex flex-1 flex-col px-6">
                                         <ul
                                             role="list"
                                             className="flex flex-1 flex-col gap-y-7"
@@ -152,8 +173,14 @@ export default function DashboardLayoutComponent({
             {/* Static sidebar for desktop */}
             <div className="sticky top-16 hidden h-[calc(100vh-64px)] lg:z-30 lg:flex lg:w-72 lg:flex-col">
                 {/* Sidebar component, swap this element with another sidebar if you like */}
-                <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-neutral-900 px-6">
-                    <nav className="mt-4 flex flex-1 flex-col">
+                <div className="flex grow flex-col gap-y-2 overflow-y-auto bg-neutral-900">
+                    <div className="w-full border-b border-neutral-700 px-4 py-4">
+                        <SiteDropdown
+                            sites={sites.data ?? []}
+                            selectedID={selectedSite?.id ?? ""}
+                        />
+                    </div>
+                    <nav className="mt-2 flex flex-1 flex-col px-6">
                         <ul
                             role="list"
                             className="flex flex-1 flex-col gap-y-7"

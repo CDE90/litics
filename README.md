@@ -86,3 +86,10 @@ This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3
     -   Add user profile section at bottom of sidebar
     -   Also required to change base layout to use min-h-screen which then needed other pages to have flex-grow to fit the screen properly
     -   Main navbar also became sticky on all pages with a little shadow
+
+23/10/2023
+
+-   Add a site dropdown to the sidebar on /dashboard
+    -   This dropdown will be used to select which site's data is being displayed
+    -   The dropdown is populated with the user's sites
+    -   TODO: The dropdown should also populated with a "create new site" button
