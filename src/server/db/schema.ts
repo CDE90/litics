@@ -9,7 +9,6 @@ import {
     varchar,
     boolean,
 } from "drizzle-orm/mysql-core";
-// import { type AdapterAccount } from "next-auth/adapters";
 import type { AdapterAccount } from "@auth/core/adapters";
 
 /**
@@ -63,9 +62,6 @@ export const pageviews = mysqlTable(
         siteIdIdx: index("site_id_idx").on(pageview.siteId),
         hostnameIdx: index("hostname_idx").on(pageview.hostname),
         pathnameIdx: index("pathname_idx").on(pageview.pathname),
-        userSignatureIdx: index("user_signature_idx").on(
-            pageview.userSignature,
-        ),
     }),
 );
 
@@ -87,6 +83,12 @@ export const locations = mysqlTable(
 export const sitesRelations = relations(sites, ({ one, many }) => ({
     owner: one(users, { fields: [sites.userId], references: [users.id] }),
     pageviews: many(pageviews),
+    pageStats: many(pageStats),
+    referrerStats: many(referrerStats),
+    siteStats: many(siteStats),
+    browserStats: many(browserStats),
+    deviceTypeStats: many(deviceTypeStats),
+    locationStats: many(locationStats),
 }));
 
 export const pageviewsRelations = relations(pageviews, ({ one }) => ({
@@ -99,7 +101,165 @@ export const pageviewsRelations = relations(pageviews, ({ one }) => ({
 
 export const locationsRelations = relations(locations, ({ many }) => ({
     pageview: many(pageviews),
+    locationStats: many(locationStats),
 }));
+
+// Aggregates
+
+export const pageStats = mysqlTable(
+    "page_stats",
+    {
+        id: varchar("id", { length: 255 }).notNull().primaryKey(),
+        siteId: varchar("site_id", { length: 255 }).notNull(),
+        hostname: varchar("hostname", { length: 255 }).notNull(),
+        pathname: varchar("pathname", { length: 255 }).notNull(),
+        pageviews: int("pageviews").default(0).notNull(),
+        uniquePageviews: int("unique_pageviews").default(0).notNull(),
+        avgDuration: int("avg_duration").default(0).notNull(),
+        timestamp: timestamp("timestamp").notNull(),
+    },
+    (pageStat) => ({
+        hostnameIdx: index("hostname_idx").on(pageStat.hostname),
+        pathnameIdx: index("pathname_idx").on(pageStat.pathname),
+        timestampIdx: index("timestamp_idx").on(pageStat.timestamp),
+    }),
+);
+
+export const referrerStats = mysqlTable(
+    "referrer_stats",
+    {
+        id: varchar("id", { length: 255 }).notNull().primaryKey(),
+        siteId: varchar("site_id", { length: 255 }).notNull(),
+        hostname: varchar("hostname", { length: 255 }).notNull(),
+        pathname: varchar("pathname", { length: 255 }).notNull(),
+        referrerHostname: varchar("referrer_hostname", { length: 255 }),
+        referrerPathname: varchar("referrer_pathname", { length: 255 }),
+        pageviews: int("pageviews").default(0).notNull(),
+        uniquePageviews: int("unique_pageviews").default(0).notNull(),
+        avgDuration: int("avg_duration").default(0).notNull(),
+        timestamp: timestamp("timestamp").notNull(),
+    },
+    (referrerStat) => ({
+        hostnameIdx: index("hostname_idx").on(referrerStat.hostname),
+        pathnameIdx: index("pathname_idx").on(referrerStat.pathname),
+        timestampIdx: index("timestamp_idx").on(referrerStat.timestamp),
+    }),
+);
+
+export const siteStats = mysqlTable(
+    "site_stats",
+    {
+        id: varchar("id", { length: 255 }).notNull().primaryKey(),
+        siteId: varchar("site_id", { length: 255 }).notNull(),
+        pageviews: int("pageviews").default(0).notNull(),
+        uniquePageviews: int("unique_pageviews").default(0).notNull(),
+        avgDuration: int("avg_duration").default(0).notNull(),
+        timestamp: timestamp("timestamp").notNull(),
+    },
+    (siteStat) => ({
+        siteIdIdx: index("site_id_idx").on(siteStat.siteId),
+        timestampIdx: index("timestamp_idx").on(siteStat.timestamp),
+    }),
+);
+
+export const browserStats = mysqlTable(
+    "browser_stats",
+    {
+        id: varchar("id", { length: 255 }).notNull().primaryKey(),
+        siteId: varchar("site_id", { length: 255 }).notNull(),
+        hostname: varchar("hostname", { length: 255 }).notNull(),
+        pathname: varchar("pathname", { length: 255 }).notNull(),
+        browserName: varchar("browser_name", { length: 255 }).notNull(),
+        pageviews: int("pageviews").default(0).notNull(),
+        uniquePageviews: int("unique_pageviews").default(0).notNull(),
+        avgDuration: int("avg_duration").default(0).notNull(),
+        timestamp: timestamp("timestamp").notNull(),
+    },
+    (browserStat) => ({
+        hostnameIdx: index("hostname_idx").on(browserStat.hostname),
+        pathnameIdx: index("pathname_idx").on(browserStat.pathname),
+        timestampIdx: index("timestamp_idx").on(browserStat.timestamp),
+    }),
+);
+
+export const deviceTypeStats = mysqlTable(
+    "device_type_stats",
+    {
+        id: varchar("id", { length: 255 }).notNull().primaryKey(),
+        siteId: varchar("site_id", { length: 255 }).notNull(),
+        os: varchar("os", { length: 255 }).notNull(),
+        deviceType: varchar("device_type", { length: 255 }).notNull(), // either mobile, tablet, or desktop
+        hostname: varchar("hostname", { length: 255 }).notNull(),
+        pathname: varchar("pathname", { length: 255 }).notNull(),
+        pageviews: int("pageviews").default(0).notNull(),
+        uniquePageviews: int("unique_pageviews").default(0).notNull(),
+        avgDuration: int("avg_duration").default(0).notNull(),
+        timestamp: timestamp("timestamp").notNull(),
+    },
+    (deviceTypeStat) => ({
+        hostnameIdx: index("hostname_idx").on(deviceTypeStat.hostname),
+        pathnameIdx: index("pathname_idx").on(deviceTypeStat.pathname),
+        timestampIdx: index("timestamp_idx").on(deviceTypeStat.timestamp),
+    }),
+);
+
+export const locationStats = mysqlTable(
+    "location_stats",
+    {
+        id: varchar("id", { length: 255 }).notNull().primaryKey(),
+        siteId: varchar("site_id", { length: 255 }).notNull(),
+        hostname: varchar("hostname", { length: 255 }).notNull(),
+        pathname: varchar("pathname", { length: 255 }).notNull(),
+        locationId: varchar("location_id", { length: 255 }).notNull(),
+        pageviews: int("pageviews").default(0).notNull(),
+        uniquePageviews: int("unique_pageviews").default(0).notNull(),
+        avgDuration: int("avg_duration").default(0).notNull(),
+        timestamp: timestamp("timestamp").notNull(),
+    },
+    (locationStat) => ({
+        hostnameIdx: index("hostname_idx").on(locationStat.hostname),
+        pathnameIdx: index("pathname_idx").on(locationStat.pathname),
+        timestampIdx: index("timestamp_idx").on(locationStat.timestamp),
+    }),
+);
+
+export const pageStatsRelations = relations(pageStats, ({ one }) => ({
+    site: one(sites, { fields: [pageStats.siteId], references: [sites.id] }),
+}));
+
+export const referrerStatsRelations = relations(referrerStats, ({ one }) => ({
+    site: one(sites, {
+        fields: [referrerStats.siteId],
+        references: [sites.id],
+    }),
+}));
+
+export const siteStatsRelations = relations(siteStats, ({ one }) => ({
+    site: one(sites, { fields: [siteStats.siteId], references: [sites.id] }),
+}));
+
+export const browserStatsRelations = relations(browserStats, ({ one }) => ({
+    site: one(sites, { fields: [browserStats.siteId], references: [sites.id] }),
+}));
+
+export const deviceTypeStatsRelations = relations(
+    deviceTypeStats,
+    ({ one }) => ({
+        site: one(sites, {
+            fields: [deviceTypeStats.siteId],
+            references: [sites.id],
+        }),
+    }),
+);
+
+export const locationStatsRelations = relations(locationStats, ({ one }) => ({
+    site: one(sites, {
+        fields: [locationStats.siteId],
+        references: [sites.id],
+    }),
+}));
+
+// Authentication Models
 
 export const users = mysqlTable("user", {
     id: varchar("id", { length: 255 }).notNull().primaryKey(),
