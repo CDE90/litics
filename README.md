@@ -93,3 +93,7 @@ This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3
     -   This dropdown will be used to select which site's data is being displayed
     -   The dropdown is populated with the user's sites
     -   TODO: The dropdown should also populated with a "create new site" button
+
+25/10/2023
+
+-   Add 'Add site' button to site selector dropdown.

@@ -1,6 +1,10 @@
 import { Fragment, useEffect, useState } from "react";
 import { Listbox, Transition } from "@headlessui/react";
-import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
+import {
+    CheckIcon,
+    ChevronUpDownIcon,
+    PlusIcon,
+} from "@heroicons/react/20/solid";
 import Link from "next/link";
 import { type sites } from "~/server/db/schema";
 import { SmallLoading } from "./loading";
@@ -111,6 +115,40 @@ const SiteDropdown = ({
                                     )}
                                 </Listbox.Option>
                             ))}
+                            {/* Add site button */}
+                            <Listbox.Option
+                                key="add"
+                                className={({ active }) =>
+                                    classNames(
+                                        active
+                                            ? "bg-blue-600 text-white"
+                                            : "text-neutral-100",
+                                        "relative cursor-default select-none border-t-2 border-neutral-500 py-2 pl-3 pr-9",
+                                    )
+                                }
+                                value={null}
+                            >
+                                {({ selected }) => (
+                                    <Link href="/get-started">
+                                        <div className="flex items-center">
+                                            <PlusIcon
+                                                className="h-6 w-6 flex-shrink-0 rounded-full"
+                                                aria-hidden="true"
+                                            />
+                                            <span
+                                                className={classNames(
+                                                    selected
+                                                        ? "font-semibold"
+                                                        : "font-normal",
+                                                    "ml-3 block truncate",
+                                                )}
+                                            >
+                                                Add a site
+                                            </span>
+                                        </div>
+                                    </Link>
+                                )}
+                            </Listbox.Option>
                         </Listbox.Options>
                     </Transition>
                 </div>
