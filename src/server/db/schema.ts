@@ -115,9 +115,7 @@ export const pageStats = mysqlTable(
         pageviews: int("pageviews").default(0).notNull(),
         uniquePageviews: int("unique_pageviews").default(0).notNull(),
         avgDuration: int("avg_duration").default(0).notNull(),
-        timestamp: timestamp("timestamp")
-            .notNull()
-            .default(sql`CURRENT_TIMESTAMP`),
+        timestamp: timestamp("timestamp").notNull(),
     },
     (pageStat) => ({
         pathnameIdx: index("pathname_idx").on(pageStat.pathname),
@@ -132,13 +130,10 @@ export const referrerStats = mysqlTable(
         siteId: varchar("site_id", { length: 255 }).notNull(),
         pathname: varchar("pathname", { length: 255 }).notNull(),
         referrerHostname: varchar("referrer_hostname", { length: 255 }),
-        referrerPathname: varchar("referrer_pathname", { length: 255 }),
         pageviews: int("pageviews").default(0).notNull(),
         uniquePageviews: int("unique_pageviews").default(0).notNull(),
         avgDuration: int("avg_duration").default(0).notNull(),
-        timestamp: timestamp("timestamp")
-            .notNull()
-            .default(sql`CURRENT_TIMESTAMP`),
+        timestamp: timestamp("timestamp").notNull(),
     },
     (referrerStat) => ({
         pathnameIdx: index("pathname_idx").on(referrerStat.pathname),
@@ -154,9 +149,7 @@ export const siteStats = mysqlTable(
         pageviews: int("pageviews").default(0).notNull(),
         uniquePageviews: int("unique_pageviews").default(0).notNull(),
         avgDuration: int("avg_duration").default(0).notNull(),
-        timestamp: timestamp("timestamp")
-            .notNull()
-            .default(sql`CURRENT_TIMESTAMP`),
+        timestamp: timestamp("timestamp").notNull(),
     },
     (siteStat) => ({
         siteIdIdx: index("site_id_idx").on(siteStat.siteId),
@@ -174,9 +167,7 @@ export const browserStats = mysqlTable(
         pageviews: int("pageviews").default(0).notNull(),
         uniquePageviews: int("unique_pageviews").default(0).notNull(),
         avgDuration: int("avg_duration").default(0).notNull(),
-        timestamp: timestamp("timestamp")
-            .notNull()
-            .default(sql`CURRENT_TIMESTAMP`),
+        timestamp: timestamp("timestamp").notNull(),
     },
     (browserStat) => ({
         pathnameIdx: index("pathname_idx").on(browserStat.pathname),
@@ -195,9 +186,7 @@ export const deviceTypeStats = mysqlTable(
         pageviews: int("pageviews").default(0).notNull(),
         uniquePageviews: int("unique_pageviews").default(0).notNull(),
         avgDuration: int("avg_duration").default(0).notNull(),
-        timestamp: timestamp("timestamp")
-            .notNull()
-            .default(sql`CURRENT_TIMESTAMP`),
+        timestamp: timestamp("timestamp").notNull(),
     },
     (deviceTypeStat) => ({
         pathnameIdx: index("pathname_idx").on(deviceTypeStat.pathname),
@@ -215,9 +204,7 @@ export const locationStats = mysqlTable(
         pageviews: int("pageviews").default(0).notNull(),
         uniquePageviews: int("unique_pageviews").default(0).notNull(),
         avgDuration: int("avg_duration").default(0).notNull(),
-        timestamp: timestamp("timestamp")
-            .notNull()
-            .default(sql`CURRENT_TIMESTAMP`),
+        timestamp: timestamp("timestamp").notNull(),
     },
     (locationStat) => ({
         pathnameIdx: index("pathname_idx").on(locationStat.pathname),
