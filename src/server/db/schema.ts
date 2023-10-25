@@ -109,17 +109,17 @@ export const locationsRelations = relations(locations, ({ many }) => ({
 export const pageStats = mysqlTable(
     "page_stats",
     {
-        id: varchar("id", { length: 255 }).notNull().primaryKey(),
+        id: int("id").autoincrement().primaryKey(),
         siteId: varchar("site_id", { length: 255 }).notNull(),
-        hostname: varchar("hostname", { length: 255 }).notNull(),
         pathname: varchar("pathname", { length: 255 }).notNull(),
         pageviews: int("pageviews").default(0).notNull(),
         uniquePageviews: int("unique_pageviews").default(0).notNull(),
         avgDuration: int("avg_duration").default(0).notNull(),
-        timestamp: timestamp("timestamp").notNull(),
+        timestamp: timestamp("timestamp")
+            .notNull()
+            .default(sql`CURRENT_TIMESTAMP`),
     },
     (pageStat) => ({
-        hostnameIdx: index("hostname_idx").on(pageStat.hostname),
         pathnameIdx: index("pathname_idx").on(pageStat.pathname),
         timestampIdx: index("timestamp_idx").on(pageStat.timestamp),
     }),
@@ -128,19 +128,19 @@ export const pageStats = mysqlTable(
 export const referrerStats = mysqlTable(
     "referrer_stats",
     {
-        id: varchar("id", { length: 255 }).notNull().primaryKey(),
+        id: int("id").autoincrement().primaryKey(),
         siteId: varchar("site_id", { length: 255 }).notNull(),
-        hostname: varchar("hostname", { length: 255 }).notNull(),
         pathname: varchar("pathname", { length: 255 }).notNull(),
         referrerHostname: varchar("referrer_hostname", { length: 255 }),
         referrerPathname: varchar("referrer_pathname", { length: 255 }),
         pageviews: int("pageviews").default(0).notNull(),
         uniquePageviews: int("unique_pageviews").default(0).notNull(),
         avgDuration: int("avg_duration").default(0).notNull(),
-        timestamp: timestamp("timestamp").notNull(),
+        timestamp: timestamp("timestamp")
+            .notNull()
+            .default(sql`CURRENT_TIMESTAMP`),
     },
     (referrerStat) => ({
-        hostnameIdx: index("hostname_idx").on(referrerStat.hostname),
         pathnameIdx: index("pathname_idx").on(referrerStat.pathname),
         timestampIdx: index("timestamp_idx").on(referrerStat.timestamp),
     }),
@@ -149,12 +149,14 @@ export const referrerStats = mysqlTable(
 export const siteStats = mysqlTable(
     "site_stats",
     {
-        id: varchar("id", { length: 255 }).notNull().primaryKey(),
+        id: int("id").autoincrement().primaryKey(),
         siteId: varchar("site_id", { length: 255 }).notNull(),
         pageviews: int("pageviews").default(0).notNull(),
         uniquePageviews: int("unique_pageviews").default(0).notNull(),
         avgDuration: int("avg_duration").default(0).notNull(),
-        timestamp: timestamp("timestamp").notNull(),
+        timestamp: timestamp("timestamp")
+            .notNull()
+            .default(sql`CURRENT_TIMESTAMP`),
     },
     (siteStat) => ({
         siteIdIdx: index("site_id_idx").on(siteStat.siteId),
@@ -165,18 +167,18 @@ export const siteStats = mysqlTable(
 export const browserStats = mysqlTable(
     "browser_stats",
     {
-        id: varchar("id", { length: 255 }).notNull().primaryKey(),
+        id: int("id").autoincrement().primaryKey(),
         siteId: varchar("site_id", { length: 255 }).notNull(),
-        hostname: varchar("hostname", { length: 255 }).notNull(),
         pathname: varchar("pathname", { length: 255 }).notNull(),
         browserName: varchar("browser_name", { length: 255 }).notNull(),
         pageviews: int("pageviews").default(0).notNull(),
         uniquePageviews: int("unique_pageviews").default(0).notNull(),
         avgDuration: int("avg_duration").default(0).notNull(),
-        timestamp: timestamp("timestamp").notNull(),
+        timestamp: timestamp("timestamp")
+            .notNull()
+            .default(sql`CURRENT_TIMESTAMP`),
     },
     (browserStat) => ({
-        hostnameIdx: index("hostname_idx").on(browserStat.hostname),
         pathnameIdx: index("pathname_idx").on(browserStat.pathname),
         timestampIdx: index("timestamp_idx").on(browserStat.timestamp),
     }),
@@ -185,19 +187,19 @@ export const browserStats = mysqlTable(
 export const deviceTypeStats = mysqlTable(
     "device_type_stats",
     {
-        id: varchar("id", { length: 255 }).notNull().primaryKey(),
+        id: int("id").autoincrement().primaryKey(),
         siteId: varchar("site_id", { length: 255 }).notNull(),
         os: varchar("os", { length: 255 }).notNull(),
         deviceType: varchar("device_type", { length: 255 }).notNull(), // either mobile, tablet, or desktop
-        hostname: varchar("hostname", { length: 255 }).notNull(),
         pathname: varchar("pathname", { length: 255 }).notNull(),
         pageviews: int("pageviews").default(0).notNull(),
         uniquePageviews: int("unique_pageviews").default(0).notNull(),
         avgDuration: int("avg_duration").default(0).notNull(),
-        timestamp: timestamp("timestamp").notNull(),
+        timestamp: timestamp("timestamp")
+            .notNull()
+            .default(sql`CURRENT_TIMESTAMP`),
     },
     (deviceTypeStat) => ({
-        hostnameIdx: index("hostname_idx").on(deviceTypeStat.hostname),
         pathnameIdx: index("pathname_idx").on(deviceTypeStat.pathname),
         timestampIdx: index("timestamp_idx").on(deviceTypeStat.timestamp),
     }),
@@ -206,18 +208,18 @@ export const deviceTypeStats = mysqlTable(
 export const locationStats = mysqlTable(
     "location_stats",
     {
-        id: varchar("id", { length: 255 }).notNull().primaryKey(),
+        id: int("id").autoincrement().primaryKey(),
         siteId: varchar("site_id", { length: 255 }).notNull(),
-        hostname: varchar("hostname", { length: 255 }).notNull(),
         pathname: varchar("pathname", { length: 255 }).notNull(),
         locationId: varchar("location_id", { length: 255 }).notNull(),
         pageviews: int("pageviews").default(0).notNull(),
         uniquePageviews: int("unique_pageviews").default(0).notNull(),
         avgDuration: int("avg_duration").default(0).notNull(),
-        timestamp: timestamp("timestamp").notNull(),
+        timestamp: timestamp("timestamp")
+            .notNull()
+            .default(sql`CURRENT_TIMESTAMP`),
     },
     (locationStat) => ({
-        hostnameIdx: index("hostname_idx").on(locationStat.hostname),
         pathnameIdx: index("pathname_idx").on(locationStat.pathname),
         timestampIdx: index("timestamp_idx").on(locationStat.timestamp),
     }),

@@ -97,3 +97,12 @@ This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3
 25/10/2023
 
 -   Add 'Add site' button to site selector dropdown.
+-   Add upstash qstash for periodic cron jobs
+-   Add database schemas for aggregation tables
+    -   Tables are: page_stats, referrer_stats, site_stats, browser_stats, device_type_stats, location_stats
+    -   These tables will be used to store hourly aggregated data for each site
+-   Edited aggregation schemas:
+    -   Change ID to be autoincremented int
+    -   Remove hostname from models (as covered with site_id)
+    -   Add timestamp to models (how did I forget this?)
+-   Start work on aggregation endpoint.
