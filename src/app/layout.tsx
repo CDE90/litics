@@ -6,6 +6,7 @@ import { headers } from "next/headers";
 import { TRPCReactProvider } from "~/trpc/react";
 import Navbar from "./_components/navbar";
 import LoginButton from "./_components/login-button";
+import Script from "next/script";
 
 const inter = Inter({
     subsets: ["latin"],
@@ -25,6 +26,7 @@ export default async function RootLayout({
 }) {
     return (
         <html lang="en">
+            <Script defer src="https://litics.ecwrd.com/script.js" />
             <body
                 className={`font-sans ${inter.variable} flex min-h-screen flex-col bg-neutral-800 text-white`}
             >
