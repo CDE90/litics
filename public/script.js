@@ -91,7 +91,6 @@
                     ? new URL(document.referrer).pathname
                     : null,
             },
-            timestamp: new Date().toISOString(),
             screenSize: window.screen.width + "x" + window.screen.height,
         };
 
@@ -120,15 +119,12 @@
                 window.location.pathname,
         );
 
-        const currentTime = new Date();
-
         const pageviewData = {
             type: "exit",
             site: {
                 hostname: prevPage.hostname,
                 pathname: prevPage.pathname,
             },
-            timestamp: currentTime.toISOString(),
         };
 
         sendData(pageviewData);
@@ -154,15 +150,12 @@
             return;
         }
 
-        const currentTime = new Date();
-
         const pageviewData = {
             type: "ping",
             site: {
                 hostname: window.location.hostname,
                 pathname: window.location.pathname,
             },
-            timestamp: currentTime.toISOString(),
         };
 
         sendData(pageviewData);

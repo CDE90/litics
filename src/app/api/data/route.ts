@@ -39,7 +39,6 @@ const props = {
         hostname: z.string().nullable(),
         pathname: z.string().nullable(),
     }),
-    timestamp: z.string(),
     screenSize: z.string(),
 };
 
@@ -53,13 +52,11 @@ const loadRequestSchema = z.object({
 const pingRequestSchema = z.object({
     type: z.literal(typeEnum.enum.ping),
     site: props.site,
-    timestamp: props.timestamp,
 });
 
 const exitRequestSchema = z.object({
     type: z.literal(typeEnum.enum.exit),
     site: props.site,
-    timestamp: props.timestamp,
 });
 
 const requestSchema = z.discriminatedUnion("type", [
@@ -76,6 +73,8 @@ export async function POST(request: NextRequest) {
     }
 
     const data = res.data;
+
+    const timestamp = new Date();
 
     const userAgent = request.headers.get("user-agent");
 
@@ -122,9 +121,7 @@ export async function POST(request: NextRequest) {
 
     if (pageview) {
         const duration = Math.floor(
-            (new Date(data.timestamp).getTime() -
-                pageview.timestamp.getTime()) /
-                1000,
+            (timestamp.getTime() - pageview.timestamp.getTime()) / 1000,
         );
 
         await db
@@ -137,8 +134,6 @@ export async function POST(request: NextRequest) {
             .execute();
     } else {
         const id = createId();
-
-        const timestamp = new Date(data.timestamp);
 
         let referrerHostname = null;
         let referrerPathname = null;
