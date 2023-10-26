@@ -113,3 +113,4 @@ This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3
 -   Finish aggregation endpoint
     -   This endpoint will be called by a cron job every hour to aggregate data from the pageviews table into the aggregation tables
     -   Should the endpoint delete pageviews after aggregating them??
+-   Update script to not send data on localhost

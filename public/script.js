@@ -40,6 +40,7 @@
      * @param {Object} data
      */
     function sendData(data) {
+        if (window.location.hostname === "localhost") return;
         fetch("https://litics.ecwrd.com/api/data", {
             // fetch("http://localhost:3000/api/data", {
             method: "POST",
