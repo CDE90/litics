@@ -106,3 +106,10 @@ This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3
     -   Remove hostname from models (as covered with site_id)
     -   Add timestamp to models (how did I forget this?)
 -   Start work on aggregation endpoint.
+-   Write some basic SQL statements for aggregation endpoint
+
+26/10/2023
+
+-   Finish aggregation endpoint
+    -   This endpoint will be called by a cron job every hour to aggregate data from the pageviews table into the aggregation tables
+    -   Should the endpoint delete pageviews after aggregating them??
