@@ -30,7 +30,7 @@
         "**/*.cjs",
         "**/*.mjs",
         ".next/types/**/*.ts",
-        "public/*.js"
+        "public/raw.script.js"
     ],
     "exclude": ["node_modules"]
 }
