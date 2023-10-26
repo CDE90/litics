@@ -115,3 +115,4 @@ This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3
     -   Should the endpoint delete pageviews after aggregating them??
 -   Update script to not send data on localhost
 -   Update script to move timestamp from client to server (so the timestamp is more accurate and consistent - also can't be tampered with)
+-   Add minification for script
