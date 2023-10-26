@@ -129,7 +129,6 @@ export const referrerStats = mysqlTable(
         siteId: varchar("site_id", { length: 255 }).notNull(),
         pathname: varchar("pathname", { length: 255 }).notNull(),
         referrerHostname: varchar("referrer_hostname", { length: 255 }),
-        referrerPathname: varchar("referrer_pathname", { length: 255 }),
         pageviews: int("pageviews").default(0).notNull(),
         uniquePageviews: int("unique_pageviews").default(0).notNull(),
         avgDuration: int("avg_duration").default(0).notNull(),
