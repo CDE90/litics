@@ -40,23 +40,28 @@ const props = {
         pathname: z.string().nullable(),
     }),
     screenSize: z.string(),
+    inactiveTime: z.number().gte(0).lte(30),
 };
 
 const typeEnum = z.enum(["load", "ping", "exit"]);
 
 const loadRequestSchema = z.object({
     type: z.literal(typeEnum.enum.load),
-    ...props,
+    site: props.site,
+    referrer: props.referrer,
+    screenSize: props.screenSize,
 });
 
 const pingRequestSchema = z.object({
     type: z.literal(typeEnum.enum.ping),
     site: props.site,
+    inactiveTime: props.inactiveTime,
 });
 
 const exitRequestSchema = z.object({
     type: z.literal(typeEnum.enum.exit),
     site: props.site,
+    inactiveTime: props.inactiveTime,
 });
 
 const requestSchema = z.discriminatedUnion("type", [
@@ -120,9 +125,16 @@ export async function POST(request: NextRequest) {
     });
 
     if (pageview) {
-        const duration = Math.floor(
+        let duration = Math.floor(
             (timestamp.getTime() - pageview.timestamp.getTime()) / 1000,
         );
+
+        if (
+            (data.type === "ping" || data.type === "exit") &&
+            duration >= data.inactiveTime
+        ) {
+            duration -= data.inactiveTime;
+        }
 
         await db
             .update(pageviews)

@@ -125,3 +125,5 @@ This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3
     -   Probably just requires adding indexes to some fields. The query that is reading the most rows is line 111 of /src/app/api/data/route.ts
     -   Look at indexing user_signature, hostname, pathname, has_exited and timestamp
 -   Add additional db indexes to pageviews table
+-   Track user inactivity with the script so that the duration is calculated more accurately.
+    -   This was done by listening to the focus and blur events.

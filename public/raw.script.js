@@ -125,6 +125,7 @@
                 hostname: prevPage.hostname,
                 pathname: prevPage.pathname,
             },
+            inactiveTime,
         };
 
         sendData(pageviewData);
@@ -135,6 +136,8 @@
             hostname: window.location.hostname,
             pathname: window.location.pathname,
         };
+
+        inactiveTime = 0;
     }
 
     // Function to periodically send data for duration calculations
@@ -156,16 +159,22 @@
                 hostname: window.location.hostname,
                 pathname: window.location.pathname,
             },
+            inactiveTime,
         };
 
         sendData(pageviewData);
 
         applyEventPatch();
+
+        inactiveTime = 0;
     }
 
     applyEventPatch();
 
     const scriptStart = new Date();
+
+    let isActive = true;
+    let inactiveTime = 0;
 
     // Send initial pageview data
     sendPageviewData();
@@ -189,6 +198,19 @@
     window.addEventListener("hashchange", () => {
         // send the locationchange event
         window.dispatchEvent(new Event("locationchange"));
+    });
+
+    // track user inactivity.
+    const inactivityCheckInterval = 1000; // 1 second
+    setInterval(() => {
+        if (!isActive) inactiveTime++;
+    }, inactivityCheckInterval);
+
+    window.addEventListener("focus", () => {
+        isActive = true;
+    });
+    window.addEventListener("blur", () => {
+        isActive = false;
     });
 
     // Periodically send data for duration calculations (e.g., every 30 seconds)
