@@ -124,3 +124,4 @@ This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3
 -   TODO: Have a look at the /api/data endpoint and find a way to optimise the rows read for every page view
     -   Probably just requires adding indexes to some fields. The query that is reading the most rows is line 111 of /src/app/api/data/route.ts
     -   Look at indexing user_signature, hostname, pathname, has_exited and timestamp
+-   Add additional db indexes to pageviews table
