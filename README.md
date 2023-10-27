@@ -117,3 +117,10 @@ This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3
 -   Update script to move timestamp from client to server (so the timestamp is more accurate and consistent - also can't be tampered with)
 -   Add minification for script
 -   Add self-tracking for litics website
+
+27/10/2023
+
+-   TODO: Avg duration is way too high. This will be because people just leave the page open in the background. I need to find a way to detect when the user is inactive and stop the timer. This will either require me to move duration calculations back to the client, add a new event type for inactivity and focus, or just send the inactive duration from the client to the server and use that to calculate the duration.
+-   TODO: Have a look at the /api/data endpoint and find a way to optimise the rows read for every page view
+    -   Probably just requires adding indexes to some fields. The query that is reading the most rows is line 111 of /src/app/api/data/route.ts
+    -   Look at indexing user_signature, hostname, pathname, has_exited and timestamp
