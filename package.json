@@ -29,7 +29,7 @@
         "@upstash/qstash": "^2.1.11",
         "drizzle-orm": "^0.28.6",
         "next": "^14.0.1",
-        "next-auth": "0.0.0-manual.cfb42ae7",
+        "next-auth": "5.0.0-beta.3",
         "react": "18.2.0",
         "react-dom": "18.2.0",
         "superjson": "^2.2.0",
