@@ -153,6 +153,23 @@
             return;
         }
 
+        if (hasExitedByInactivity) {
+            return;
+        }
+
+        if (
+            inactiveTime === durationPingInterval / 1000 &&
+            !hasExitedByInactivity
+        ) {
+            hasExitedByInactivity = true;
+            handlePageExit();
+            return;
+        } else if (inactiveTime === durationPingInterval / 1000) {
+            sendPageviewData();
+            hasExitedByInactivity = false;
+            return;
+        }
+
         const pageviewData = {
             type: "ping",
             site: {
@@ -175,6 +192,7 @@
 
     let isActive = true;
     let inactiveTime = 0;
+    let hasExitedByInactivity = false;
 
     // Send initial pageview data
     sendPageviewData();

@@ -134,6 +134,7 @@ export async function POST(request: NextRequest) {
             duration >= data.inactiveTime
         ) {
             duration -= data.inactiveTime;
+            if (duration < 0) duration = 0;
         }
 
         await db
