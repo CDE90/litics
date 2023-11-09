@@ -127,3 +127,10 @@ This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3
 -   Add additional db indexes to pageviews table
 -   Track user inactivity with the script so that the duration is calculated more accurately.
     -   This was done by listening to the focus and blur events.
+
+09/11/2023
+
+-   TODO: Change the way data is aggregated.
+    -   Instead of automatically aggregating data every hour, it would be better to aggregate data on the fly when it is requested.
+    -   This is because users will be able to filter the data they see on the dashboard page, and this would be impossible if the data was already aggregated with different filters.
+    -   Aggregations should still be saved after calculating them to reduce the number of rows that need to be read when the same aggregation is requested again. With each stored aggregation, the filters used to create it should also be stored - maybe in a separate table or as a json object/list (would need to be consistently ordered)
