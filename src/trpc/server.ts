@@ -1,28 +1,61 @@
+import "server-only";
 import {
-  createTRPCProxyClient,
-  loggerLink,
-  unstable_httpBatchStreamLink,
+    TRPCClientError,
+    createTRPCProxyClient,
+    loggerLink,
 } from "@trpc/client";
-import { headers } from "next/headers";
+import { cookies } from "next/headers";
+import { appRouter } from "~/server/api/root";
+import { transformer } from "./shared";
+import { callProcedure } from "@trpc/server";
 
-import { type AppRouter } from "~/server/api/root";
-import { getUrl, transformer } from "./shared";
+import { observable } from "@trpc/server/observable";
+import type { TRPCErrorResponse } from "@trpc/server/rpc";
+import { createInnerTRPCContext } from "~/server/api/trpc";
+import { cache } from "react";
 
-export const api = createTRPCProxyClient<AppRouter>({
-  transformer,
-  links: [
-    loggerLink({
-      enabled: (op) =>
-        process.env.NODE_ENV === "development" ||
-        (op.direction === "down" && op.result instanceof Error),
-    }),
-    unstable_httpBatchStreamLink({
-      url: getUrl(),
-      headers() {
-        const heads = new Map(headers());
-        heads.set("x-trpc-source", "rsc");
-        return Object.fromEntries(heads);
-      },
-    }),
-  ],
+const createContext = cache(() => {
+    return createInnerTRPCContext({
+        headers: new Headers({
+            cookie: cookies().toString(),
+            "x-trpc-source": "rsc",
+        }),
+    });
+});
+
+export const api = createTRPCProxyClient<typeof appRouter>({
+    transformer,
+    links: [
+        loggerLink({
+            enabled: (op) =>
+                process.env.NODE_ENV === "development" ||
+                (op.direction === "down" && op.result instanceof Error),
+        }),
+        /**
+         * Custom RSC link that invokes procedures directly in the server component
+         * Don't be too afraid about the complexity here, it's just wrapping `callProcedure`
+         * with an observable to make it a valid ending link for tRPC.
+         */
+        () =>
+            ({ op }) =>
+                observable((observer) => {
+                    createContext()
+                        .then((ctx) => {
+                            return callProcedure({
+                                procedures: appRouter._def.procedures,
+                                path: op.path,
+                                rawInput: op.input,
+                                ctx,
+                                type: op.type,
+                            });
+                        })
+                        .then((data) => {
+                            observer.next({ result: { data } });
+                            observer.complete();
+                        })
+                        .catch((cause: TRPCErrorResponse) => {
+                            observer.error(TRPCClientError.from(cause));
+                        });
+                }),
+    ],
 });

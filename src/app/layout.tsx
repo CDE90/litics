@@ -1,7 +1,7 @@
 import "~/styles/globals.css";
 
 import { Inter } from "next/font/google";
-import { headers } from "next/headers";
+import { cookies } from "next/headers";
 
 import { TRPCReactProvider } from "~/trpc/react";
 import Navbar from "./_components/navbar";
@@ -19,6 +19,8 @@ export const metadata = {
     icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
+const getCookieString = () => Promise.resolve(cookies().toString());
+
 export default async function RootLayout({
     children,
 }: {
@@ -30,7 +32,7 @@ export default async function RootLayout({
             <body
                 className={`font-sans ${inter.variable} flex min-h-screen flex-col bg-neutral-800 text-white`}
             >
-                <TRPCReactProvider headers={headers()}>
+                <TRPCReactProvider cookiePromise={getCookieString()}>
                     <Navbar loginButton={await LoginButton()} />
                     {children}
                 </TRPCReactProvider>

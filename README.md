@@ -163,3 +163,4 @@ This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3
 -   If the date that the site was created is after the start date of the graph, the graph will now start at the date the site was created
 -   Fix an issue where the line on the graph could go outside of the graph area
     -   Done by manually setting a maxValue based on the max value of the data
+-   Update tRPC to only send cookies rather than all headers. Also change how tRPC server-side is handled (no longer does it via http)
