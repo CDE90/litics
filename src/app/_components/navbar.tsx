@@ -67,6 +67,10 @@ export default function Navbar({ loginButton }: { loginButton: JSX.Element }) {
                                     <div className="flex space-x-4">
                                         {navigation.map((item) => {
                                             const current =
+                                                (pathname.startsWith(
+                                                    item.href,
+                                                ) &&
+                                                    item.href != "/") ||
                                                 pathname === item.href;
 
                                             return (
@@ -101,7 +105,10 @@ export default function Navbar({ loginButton }: { loginButton: JSX.Element }) {
                     <Disclosure.Panel className="sm:hidden">
                         <div className="space-y-1 px-2 pb-3 pt-2">
                             {navigation.map((item) => {
-                                const current = pathname === item.href;
+                                const current =
+                                    (pathname.startsWith(item.href) &&
+                                        item.href != "/") ||
+                                    pathname === item.href;
 
                                 return (
                                     <Disclosure.Button

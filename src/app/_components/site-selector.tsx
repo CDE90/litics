@@ -17,24 +17,24 @@ function classNames(...classes: string[]) {
 
 const SiteDropdown = ({
     sites,
-    selectedID,
+    selectedURL,
 }: {
     sites: Site[];
-    selectedID: string;
+    selectedURL: string;
 }) => {
     const [selectedSite, setSelectedSite] = useState(
-        sites.find((g) => g.id === selectedID),
+        sites.find((g) => g.id === selectedURL),
     );
 
     useEffect(() => {
-        setSelectedSite(sites.find((g) => g.id === selectedID));
-    }, [selectedID, sites]);
+        setSelectedSite(sites.find((g) => g.url === selectedURL));
+    }, [selectedURL, sites]);
 
     return (
         <Listbox value={selectedSite}>
             {({ open }) => (
                 <div className="relative">
-                    <Listbox.Button className="relative w-full cursor-pointer rounded-md border border-neutral-600 bg-neutral-700 py-2 pl-3 pr-10 text-left shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:text-sm">
+                    <Listbox.Button className="relative w-52 cursor-pointer rounded-md border border-neutral-600 bg-neutral-700 py-2 pl-3 pr-10 text-left shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 sm:text-sm">
                         <span className="flex h-6 flex-row items-center align-middle">
                             {selectedSite ? (
                                 <span className="block truncate">

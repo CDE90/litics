@@ -134,3 +134,26 @@ This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3
     -   Instead of automatically aggregating data every hour, it would be better to aggregate data on the fly when it is requested.
     -   This is because users will be able to filter the data they see on the dashboard page, and this would be impossible if the data was already aggregated with different filters.
     -   Aggregations should still be saved after calculating them to reduce the number of rows that need to be read when the same aggregation is requested again. With each stored aggregation, the filters used to create it should also be stored - maybe in a separate table or as a json object/list (would need to be consistently ordered)
+
+15/11/2023
+
+-   Updated Navbar so that users on the /dashboard/[url] page have the Dashboard link highlighted in the navbar
+-   Update Site Selector
+    -   Change selectedID to selectedURL
+    -   Give a fixed width to the dropdown so that it doesn't change size when the selected site changes
+-   Move client-only components from the /dashboard layout to a separate file, so the main layout can be a server component (also wrapped sidebar with suspense)
+-   Update sidebar so that the selected site is highlighted in the dropdown by default (selected site taken from [url] param)
+-   Add a basic /dashboard/[url] page with 5 cards
+    -   Visitors
+    -   Top Referrers
+    -   Top Pages
+    -   Locations
+    -   Devices
+-   Add a graph to the Visitors card.
+    -   Basic AreaChart with data taken from the pageviews table. (this data is queried basically just to get correct aggregations. I need to change this to use the aggregation tables / new aggregation method).
+    -   The chart has 3 lines:
+        -   Total pageviews
+        -   Unique pageviews
+        -   Average duration
+    -   The data fetching part of the component is a server component, and queries the database in the component.
+    -   This server component wraps the client component that actually contains the area chart.
