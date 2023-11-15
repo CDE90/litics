@@ -157,3 +157,5 @@ This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3
         -   Average duration
     -   The data fetching part of the component is a server component, and queries the database in the component.
     -   This server component wraps the client component that actually contains the area chart.
+-   TODO: Update the data collection endpoint to set values for isNewSession and isNewVisit
+-   Add bar lists for top referrers and top pages

@@ -1,6 +1,10 @@
 import { Grid, Card, Col, Text, Metric } from "@tremor/react";
 import { Suspense } from "react";
-import VisitorGraph from "~/app/_components/visuals/visitors-graph";
+import {
+    PagesVisual,
+    ReferrersVisual,
+    VisitorGraph,
+} from "~/app/_components/visuals/server-visuals";
 import { api } from "~/trpc/server";
 
 export default async function DashboardPage({
@@ -34,13 +38,17 @@ export default async function DashboardPage({
                         <Text className="text-2xl font-bold">
                             Top Referrers
                         </Text>
-                        <Metric className="text-2xl font-bold">2</Metric>
+                        <Suspense fallback={<div>Loading...</div>}>
+                            <ReferrersVisual site={site} />
+                        </Suspense>
                     </Card>
                 </Col>
                 <Col>
                     <Card className="h-full">
                         <Text className="text-2xl font-bold">Top Pages</Text>
-                        <Metric className="text-2xl font-bold">3</Metric>
+                        <Suspense fallback={<div>Loading...</div>}>
+                            <PagesVisual site={site} />
+                        </Suspense>
                     </Card>
                 </Col>
                 <Col>

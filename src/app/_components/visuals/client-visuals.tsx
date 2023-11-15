@@ -1,8 +1,8 @@
 "use client";
 
-import { AreaChart } from "@tremor/react";
+import { AreaChart, BarList, type BarListProps } from "@tremor/react";
 
-export default function InnerGraph({
+export function ClientVisitorGraph({
     data,
 }: {
     data: {
@@ -15,13 +15,21 @@ export default function InnerGraph({
     return (
         <>
             <AreaChart
-                className="mt-4 h-72"
+                className="mt-4 h-96"
                 data={data}
                 index="date"
                 categories={["Pageviews", "Unique Pageviews", "Duration"]}
                 curveType="monotone"
                 onValueChange={(_) => null}
             />
+        </>
+    );
+}
+
+export function ClientBarVisual({ data }: { data: BarListProps["data"] }) {
+    return (
+        <>
+            <BarList data={data} className="mt-4" />
         </>
     );
 }
