@@ -1,4 +1,4 @@
-# Litics
+# [Litics](https://litics.ecwrd.com)
 
 Litics is a web analytics tool that I'm building for my A level computer science project.
 
