@@ -159,3 +159,7 @@ This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3
     -   This server component wraps the client component that actually contains the area chart.
 -   TODO: Update the data collection endpoint to set values for isNewSession and isNewVisit
 -   Add bar lists for top referrers and top pages
+-   Update graph so that dates without data are shown as 0
+-   If the date that the site was created is after the start date of the graph, the graph will now start at the date the site was created
+-   Fix an issue where the line on the graph could go outside of the graph area
+    -   Done by manually setting a maxValue based on the max value of the data

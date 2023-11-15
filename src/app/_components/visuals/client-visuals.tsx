@@ -21,6 +21,11 @@ export function ClientVisitorGraph({
                 categories={["Pageviews", "Unique Pageviews", "Duration"]}
                 curveType="monotone"
                 onValueChange={(_) => null}
+                maxValue={Math.max(
+                    Math.max(...data.map((d) => d.Pageviews)),
+                    Math.max(...data.map((d) => d["Unique Pageviews"])),
+                    Math.max(...data.map((d) => d.Duration)),
+                )}
             />
         </>
     );
