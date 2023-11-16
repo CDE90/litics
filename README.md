@@ -175,3 +175,8 @@ This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3
     -   Add tabs to device card (data still not present)
 -   Refactor bar list visuals to be a generic component that can be reused for different lists
 -   Add extra index on pageviews table - combined index on site_id and timestamp
+-   Data collection endpoint updates:
+    -   Make db queries more efficient by only selecting the fields that are needed
+    -   Reduce the number of db queries required by merging a location query into the pageview query
+    -   Update browser detection to add more supported browsers
+    -   Add OS detection

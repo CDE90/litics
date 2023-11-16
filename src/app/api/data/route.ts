@@ -15,18 +15,43 @@ async function hash(str: string) {
         .map((b) => b.toString(16).padStart(2, "0"))
         .join("");
     return hashHex;
-    // return createHash("sha256").update(str).digest("hex");
 }
 
 function getBrowser(userAgent: string | null) {
     if (!userAgent) return "Unknown";
 
     const ua = userAgent.toLowerCase();
-    if (ua.includes("edg/")) return "Edge";
-    if (ua.includes("trident/")) return "Internet Explorer";
-    if (ua.includes("firefox/")) return "Firefox";
-    if (ua.includes("chrome/")) return "Chrome";
-    if (ua.includes("safari/")) return "Safari";
+    if (ua.includes("yabrowser")) return "Yandex";
+    if (ua.includes("samsungbrowser")) return "Samsung";
+    if (ua.includes("ucbrowser")) return "UC Browser";
+    if (ua.includes("opr")) return "Opera";
+    if (ua.includes("opera") && !ua.includes("opr")) {
+        return ua.includes("version") ? "Opera" : "Opera Mini";
+    }
+    if (ua.includes("edge"))
+        return ua.includes("edg") ? "Microsoft Edge" : "Microsoft Legacy Edge";
+    if (ua.includes("msie") || ua.includes("trident/"))
+        return "Microsoft Internet Explorer";
+    if (ua.includes("chrome")) return "Chrome";
+    if (ua.includes("safari"))
+        return ua.includes("chrome") ? "Chrome" : "Safari";
+    if (ua.includes("firefox")) return "Firefox";
+
+    // Additional browsers could be added based on their specific user agent identifiers.
+
+    return "Unknown";
+}
+
+function getOS(userAgent: string | null) {
+    if (!userAgent) return "Unknown";
+
+    const ua = userAgent.toLowerCase();
+    if (ua.includes("windows")) return "Windows";
+    if (ua.includes("android")) return "Android";
+    if (ua.includes("linux")) return "Linux";
+    if (ua.includes("iphone") || ua.includes("ipad") || ua.includes("ipod"))
+        return "iOS";
+    if (ua.includes("mac") || ua.includes("darwin")) return "Mac OS";
     return "Unknown";
 }
 
@@ -101,6 +126,7 @@ export async function POST(request: NextRequest) {
     // get site
     const site = await db.query.sites.findFirst({
         where: eq(sites.url, data.site.hostname),
+        columns: { id: true },
     });
 
     if (!site) {
@@ -122,6 +148,10 @@ export async function POST(request: NextRequest) {
             gte(pageviews.timestamp, new Date(Date.now() - 1000 * 60 * 30)), // 30 minutes
         ),
         orderBy: desc(pageviews.timestamp),
+        columns: {
+            id: true,
+            timestamp: true,
+        },
     });
 
     if (pageview) {
@@ -151,31 +181,13 @@ export async function POST(request: NextRequest) {
         let referrerHostname = null;
         let referrerPathname = null;
         let screenSize = null;
+        let locationId: string | null = null;
 
         if (data.type === "load") {
             referrerHostname = data.referrer.hostname;
             referrerPathname = data.referrer.pathname;
             screenSize = data.screenSize;
         }
-
-        await db
-            .insert(pageviews)
-            .values({
-                id,
-                siteId: site.id,
-                hostname: data.site.hostname,
-                pathname: data.site.pathname,
-                referrerHostname: referrerHostname,
-                referrerPathname: referrerPathname,
-                screenSize: screenSize,
-                browser: getBrowser(userAgent),
-                os: "Unknown",
-                duration: 0,
-                timestamp: timestamp,
-                userSignature,
-                hasExited: data.type === "exit",
-            })
-            .execute();
 
         if (
             region !== undefined ||
@@ -193,25 +205,18 @@ export async function POST(request: NextRequest) {
                 locationFilters.push(eq(locations.city, city));
             }
 
-            const location = await db.query.locations
-                .findFirst({
-                    where: and(...locationFilters),
-                })
-                .execute();
+            const location = await db.query.locations.findFirst({
+                where: and(...locationFilters),
+                columns: { id: true },
+            });
 
-            if (location) {
-                await db
-                    .update(pageviews)
-                    .set({
-                        locationId: location.id,
-                    })
-                    .where(eq(pageviews.id, id))
-                    .execute();
-            } else {
+            locationId = location?.id ?? createId();
+
+            if (!location) {
                 await db
                     .insert(locations)
                     .values({
-                        id: createId(),
+                        id: locationId,
                         region,
                         country,
                         city,
@@ -219,6 +224,26 @@ export async function POST(request: NextRequest) {
                     .execute();
             }
         }
+
+        await db
+            .insert(pageviews)
+            .values({
+                id,
+                siteId: site.id,
+                hostname: data.site.hostname,
+                pathname: data.site.pathname,
+                referrerHostname: referrerHostname,
+                referrerPathname: referrerPathname,
+                screenSize: screenSize,
+                browser: getBrowser(userAgent),
+                os: getOS(userAgent),
+                duration: 0,
+                timestamp: timestamp,
+                userSignature,
+                hasExited: data.type === "exit",
+                locationId,
+            })
+            .execute();
     }
 
     return NextResponse.json({
