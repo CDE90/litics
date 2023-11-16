@@ -1,6 +1,6 @@
 import { pageviews, type sites } from "~/server/db/schema";
 import { db } from "~/server/db";
-import { and, desc, eq, gte, sql } from "drizzle-orm";
+import { type SQL, and, desc, eq, gte, sql } from "drizzle-orm";
 import { ClientBarVisual, AreaGraph } from "./client-visuals";
 
 import "server-only";
@@ -137,7 +137,21 @@ export async function DurationGraph({ site }: { site: Site }) {
     );
 }
 
-export async function ReferrersVisual({ site }: { site: Site }) {
+export async function BarListVisual({
+    site,
+    groupField,
+    valueQuery,
+    defaultGroupName,
+}: {
+    site: Site;
+    groupField: keyof (typeof pageviews)["_"]["columns"];
+    valueQuery?: SQL<number>;
+    defaultGroupName?: string;
+}) {
+    if (!valueQuery) {
+        valueQuery = sql<number>`count(distinct ${pageviews.userSignature})`;
+    }
+
     // for now, just get the last 30 days
     // get the date 30 days ago (at the start of the day)
     const startDate = new Date();
@@ -147,8 +161,8 @@ export async function ReferrersVisual({ site }: { site: Site }) {
     // get data
     const rawData = await db
         .select({
-            referrer: pageviews.referrerHostname,
-            pageviews: sql<number>`count(distinct ${pageviews.userSignature})`,
+            name: pageviews[groupField],
+            value: valueQuery,
         })
         .from(pageviews)
         .where(
@@ -157,52 +171,16 @@ export async function ReferrersVisual({ site }: { site: Site }) {
                 gte(pageviews.timestamp, startDate),
             ),
         )
-        .groupBy(({ referrer }) => referrer)
-        .orderBy(desc(sql<number>`count(distinct ${pageviews.userSignature})`))
+        .groupBy(({ name }) => name)
+        .orderBy(desc(valueQuery))
         .limit(10)
         .execute();
 
     // format data
-    const data = rawData.map((row) => ({
-        name: row.referrer ?? "Direct",
-        value: row.pageviews,
+    const data = rawData.map(({ name, value }) => ({
+        name: name?.toString() ?? defaultGroupName ?? "Unknown",
+        value,
     }));
 
     return <ClientBarVisual data={data} />;
 }
-
-export async function PagesVisual({ site }: { site: Site }) {
-    // for now, just get the last 30 days
-    // get the date 30 days ago (at the start of the day)
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - 30);
-    startDate.setHours(0, 0, 0, 0);
-
-    // get data
-    const rawData = await db
-        .select({
-            page: pageviews.pathname,
-            pageviews: sql<number>`count(distinct ${pageviews.userSignature})`,
-        })
-        .from(pageviews)
-        .where(
-            and(
-                eq(pageviews.siteId, site.id),
-                gte(pageviews.timestamp, startDate),
-            ),
-        )
-        .groupBy(({ page }) => page)
-        .orderBy(desc(sql<number>`count(distinct ${pageviews.userSignature})`))
-        .limit(10)
-        .execute();
-
-    // format data
-    const data = rawData.map((row) => ({
-        name: row.page,
-        value: row.pageviews,
-    }));
-
-    return <ClientBarVisual data={data} />;
-}
-
-// add function for location visual(s)

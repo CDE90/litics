@@ -2,8 +2,7 @@ import { Grid, Card, Col, Text, Metric } from "@tremor/react";
 import { Suspense } from "react";
 import {
     DurationGraph,
-    PagesVisual,
-    ReferrersVisual,
+    BarListVisual,
     VisitorGraph,
 } from "~/app/_components/visuals/server-visuals";
 import { api } from "~/trpc/server";
@@ -62,7 +61,11 @@ export default async function DashboardPage({
                             Top Referrers
                         </Text>
                         <Suspense fallback={<div>Loading...</div>}>
-                            <ReferrersVisual site={site} />
+                            <BarListVisual
+                                site={site}
+                                groupField="referrerHostname"
+                                defaultGroupName="Direct / None"
+                            />
                         </Suspense>
                     </Card>
                 </Col>
@@ -70,7 +73,7 @@ export default async function DashboardPage({
                     <Card className="h-full">
                         <Text className="text-2xl font-bold">Top Pages</Text>
                         <Suspense fallback={<div>Loading...</div>}>
-                            <PagesVisual site={site} />
+                            <BarListVisual site={site} groupField="pathname" />
                         </Suspense>
                     </Card>
                 </Col>

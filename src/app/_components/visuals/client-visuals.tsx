@@ -9,6 +9,16 @@ const durationFormatter = (value: number) => {
     return `${minutes}m ${seconds}s`;
 };
 
+const numberFormatter = (value: number) => {
+    if (value > 1e6) {
+        return `${Math.round(value / 1e5) / 10}m`;
+    } else if (value > 1e3) {
+        return `${Math.round(value / 100) / 10}k`;
+    } else {
+        return value.toString();
+    }
+};
+
 export function AreaGraph({
     data,
     categories,
@@ -44,7 +54,11 @@ export function AreaGraph({
                     ) || 0
                 }
                 valueFormatter={
-                    formatter === "duration" ? durationFormatter : undefined
+                    formatter === "number"
+                        ? numberFormatter
+                        : formatter === "duration"
+                          ? durationFormatter
+                          : undefined
                 }
             />
         </>
