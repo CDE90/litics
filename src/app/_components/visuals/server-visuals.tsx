@@ -1,7 +1,7 @@
 import { locations, pageviews, type sites } from "~/server/db/schema";
 import { db } from "~/server/db";
 import { type SQL, and, desc, eq, gte, sql, ne } from "drizzle-orm";
-import { ClientBarVisual, AreaGraph } from "./client-visuals";
+import { ClientBarVisual, AreaGraph, WorldMap } from "./client-visuals";
 
 import "server-only";
 
@@ -233,4 +233,39 @@ export async function BarListLocationVisual({
     }));
 
     return <ClientBarVisual data={data} />;
+}
+
+export async function MapVisual({ site }: { site: Site }) {
+    // for now, just get the last 30 days
+    // get the date 30 days ago (at the start of the day)
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - 30);
+    startDate.setHours(0, 0, 0, 0);
+
+    // get data
+    const rawData = await db
+        .select({
+            country: locations.country,
+            value: sql<number>`count(distinct ${pageviews.userSignature})`,
+        })
+        .from(pageviews)
+        .leftJoin(locations, eq(locations.id, pageviews.locationId))
+        .where(
+            and(
+                eq(pageviews.siteId, site.id),
+                gte(pageviews.timestamp, startDate),
+            ),
+        )
+        .groupBy(({ country }) => country)
+        .execute();
+
+    // format data
+    const data = rawData
+        .filter(({ country }) => country !== null)
+        .map(({ country, value }) => ({
+            country: country?.toString() ?? "Unknown",
+            value,
+        }));
+
+    return <WorldMap data={data} />;
 }

@@ -187,3 +187,7 @@ This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3
     -   Still need to add a map to the location card
 -   Fix dashboard sidebar open button on mobile shifting content to the right by 76px (fixed with negative left margin)
 -   Update tab responsive behaviour
+-   Add map component to locations card
+    -   Using react-simple-maps
+    -   Required quite a bit of messing around with scales, centres and projections to get the map to fit the card properly
+    -   Also added a tooltip to the map to show the number of pageviews for each country on hover

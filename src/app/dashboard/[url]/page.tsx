@@ -1,10 +1,11 @@
-import { Grid, Card, Col, Text, Metric } from "@tremor/react";
+import { Grid, Card, Col, Text } from "@tremor/react";
 import { Suspense } from "react";
 import {
     DurationGraph,
     BarListVisual,
     VisitorGraph,
     BarListLocationVisual,
+    MapVisual,
 } from "~/app/_components/visuals/server-visuals";
 import { api } from "~/trpc/server";
 import { Tabs } from "~/app/_components/visuals/tabs";
@@ -89,9 +90,7 @@ export default async function DashboardPage({
                                         <Suspense
                                             fallback={<div>Loading...</div>}
                                         >
-                                            <Metric className="text-2xl font-bold">
-                                                Map
-                                            </Metric>
+                                            <MapVisual site={site} />
                                         </Suspense>
                                     ),
                                 },
