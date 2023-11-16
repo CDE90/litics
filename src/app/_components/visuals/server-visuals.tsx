@@ -1,6 +1,6 @@
-import { pageviews, type sites } from "~/server/db/schema";
+import { locations, pageviews, type sites } from "~/server/db/schema";
 import { db } from "~/server/db";
-import { type SQL, and, desc, eq, gte, sql } from "drizzle-orm";
+import { type SQL, and, desc, eq, gte, sql, ne } from "drizzle-orm";
 import { ClientBarVisual, AreaGraph } from "./client-visuals";
 
 import "server-only";
@@ -169,6 +169,56 @@ export async function BarListVisual({
             and(
                 eq(pageviews.siteId, site.id),
                 gte(pageviews.timestamp, startDate),
+            ),
+        )
+        .groupBy(({ name }) => name)
+        .orderBy(desc(valueQuery))
+        .limit(10)
+        .execute();
+
+    // format data
+    const data = rawData.map(({ name, value }) => ({
+        name: name?.toString() ?? defaultGroupName ?? "Unknown",
+        value,
+    }));
+
+    return <ClientBarVisual data={data} />;
+}
+
+export async function BarListLocationVisual({
+    site,
+    groupField,
+    valueQuery,
+    defaultGroupName,
+}: {
+    site: Site;
+    groupField: Exclude<keyof (typeof locations)["_"]["columns"], "id">;
+    valueQuery?: SQL<number>;
+    defaultGroupName?: string;
+}) {
+    if (!valueQuery) {
+        valueQuery = sql<number>`count(distinct ${pageviews.userSignature})`;
+    }
+
+    // for now, just get the last 30 days
+    // get the date 30 days ago (at the start of the day)
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - 30);
+    startDate.setHours(0, 0, 0, 0);
+
+    // get data
+    const rawData = await db
+        .select({
+            name: locations[groupField],
+            value: valueQuery,
+        })
+        .from(pageviews)
+        .leftJoin(locations, eq(locations.id, pageviews.locationId))
+        .where(
+            and(
+                eq(pageviews.siteId, site.id),
+                gte(pageviews.timestamp, startDate),
+                ne(locations[groupField], ""),
             ),
         )
         .groupBy(({ name }) => name)

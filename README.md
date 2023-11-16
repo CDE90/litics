@@ -180,3 +180,8 @@ This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3
     -   Reduce the number of db queries required by merging a location query into the pageview query
     -   Update browser detection to add more supported browsers
     -   Add OS detection
+-   Add device bar lists to dashboard
+    -   One for browser, OS and device type
+-   Add location bar lists to dashboard
+    -   One for countries, regions and cities
+    -   Still need to add a map to the location card

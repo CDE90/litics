@@ -4,6 +4,7 @@ import {
     DurationGraph,
     BarListVisual,
     VisitorGraph,
+    BarListLocationVisual,
 } from "~/app/_components/visuals/server-visuals";
 import { api } from "~/trpc/server";
 import { Tabs } from "~/app/_components/visuals/tabs";
@@ -79,8 +80,62 @@ export default async function DashboardPage({
                 </Col>
                 <Col>
                     <Card className="h-full">
-                        <Text className="text-2xl font-bold">Locations</Text>
-                        <Metric className="text-2xl font-bold">4</Metric>
+                        <Tabs
+                            title="Locations"
+                            tabs={[
+                                {
+                                    title: "Map",
+                                    component: (
+                                        <Suspense
+                                            fallback={<div>Loading...</div>}
+                                        >
+                                            <Metric className="text-2xl font-bold">
+                                                Map
+                                            </Metric>
+                                        </Suspense>
+                                    ),
+                                },
+                                {
+                                    title: "Countries",
+                                    component: (
+                                        <Suspense
+                                            fallback={<div>Loading...</div>}
+                                        >
+                                            <BarListLocationVisual
+                                                site={site}
+                                                groupField="country"
+                                            />
+                                        </Suspense>
+                                    ),
+                                },
+                                {
+                                    title: "Regions",
+                                    component: (
+                                        <Suspense
+                                            fallback={<div>Loading...</div>}
+                                        >
+                                            <BarListLocationVisual
+                                                site={site}
+                                                groupField="region"
+                                            />
+                                        </Suspense>
+                                    ),
+                                },
+                                {
+                                    title: "Cities",
+                                    component: (
+                                        <Suspense
+                                            fallback={<div>Loading...</div>}
+                                        >
+                                            <BarListLocationVisual
+                                                site={site}
+                                                groupField="city"
+                                            />
+                                        </Suspense>
+                                    ),
+                                },
+                            ]}
+                        />
                     </Card>
                 </Col>
                 <Col>
@@ -90,15 +145,42 @@ export default async function DashboardPage({
                             tabs={[
                                 {
                                     title: "Browser",
-                                    component: <Metric>5 - Browser</Metric>,
+                                    component: (
+                                        <Suspense
+                                            fallback={<div>Loading...</div>}
+                                        >
+                                            <BarListVisual
+                                                site={site}
+                                                groupField="browser"
+                                            />
+                                        </Suspense>
+                                    ),
                                 },
                                 {
                                     title: "OS",
-                                    component: <Metric>5 - OS</Metric>,
+                                    component: (
+                                        <Suspense
+                                            fallback={<div>Loading...</div>}
+                                        >
+                                            <BarListVisual
+                                                site={site}
+                                                groupField="os"
+                                            />
+                                        </Suspense>
+                                    ),
                                 },
                                 {
                                     title: "Size",
-                                    component: <Metric>5 - Size</Metric>,
+                                    component: (
+                                        <Suspense
+                                            fallback={<div>Loading...</div>}
+                                        >
+                                            <BarListVisual
+                                                site={site}
+                                                groupField="screenSize"
+                                            />
+                                        </Suspense>
+                                    ),
                                 },
                             ]}
                         />
