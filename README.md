@@ -185,3 +185,4 @@ This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3
 -   Add location bar lists to dashboard
     -   One for countries, regions and cities
     -   Still need to add a map to the location card
+-   Fix dashboard sidebar open button on mobile shifting content to the right by 76px (fixed with negative left margin)

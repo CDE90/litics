@@ -17,7 +17,9 @@ export default function DashboardLayoutComponent({
             </Suspense>
 
             <main className="w-full">
-                <div className="mt-8 px-4 sm:px-6 lg:px-8">{children}</div>
+                <div className="-ml-[76px] mt-8 px-4 sm:px-6 lg:ml-0 lg:px-8">
+                    {children}
+                </div>
             </main>
         </div>
     );
