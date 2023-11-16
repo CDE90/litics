@@ -7,10 +7,16 @@ await import("./src/env.mjs");
 /** @type {import("next").NextConfig} */
 const config = {
     images: {
-        domains: [
-            "tailwindui.com",
-            "images.unsplash.com",
-            "cdn.discordapp.com",
+        remotePatterns: [
+            {
+                hostname: "tailwindui.com",
+            },
+            {
+                hostname: "images.unsplash.com",
+            },
+            {
+                hostname: "cdn.discordapp.com",
+            },
         ],
     },
 };
