@@ -164,3 +164,12 @@ This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3
 -   Fix an issue where the line on the graph could go outside of the graph area
     -   Done by manually setting a maxValue based on the max value of the data
 -   Update tRPC to only send cookies rather than all headers. Also change how tRPC server-side is handled (no longer does it via http)
+
+16/11/2023
+
+-   Tabs can now be added to the cards on the dashboard.
+    -   New component <Tabs />
+    -   Updated visitors graph to separate visitors, unique visitors and average duration into 2 tabs
+    -   Added duration formatting to the duration graph (e.g. 2m 32s)
+    -   Update area graph component to take data in different format (so it can be reused for different graphs with different categories)
+    -   Add tabs to device card (data still not present)

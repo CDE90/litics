@@ -1,11 +1,13 @@
 import { Grid, Card, Col, Text, Metric } from "@tremor/react";
 import { Suspense } from "react";
 import {
+    DurationGraph,
     PagesVisual,
     ReferrersVisual,
     VisitorGraph,
 } from "~/app/_components/visuals/server-visuals";
 import { api } from "~/trpc/server";
+import { Tabs } from "~/app/_components/visuals/tabs";
 
 export default async function DashboardPage({
     params,
@@ -27,10 +29,31 @@ export default async function DashboardPage({
             <Grid className="mt-4 gap-4" numItems={1} numItemsLg={2}>
                 <Col numColSpan={1} numColSpanLg={2}>
                     <Card className="h-full">
-                        <Text className="text-2xl font-bold">Visitors</Text>
-                        <Suspense fallback={<div>Loading...</div>}>
-                            <VisitorGraph site={site} />
-                        </Suspense>
+                        <Tabs
+                            title="Visitors"
+                            tabs={[
+                                {
+                                    title: "Visitors",
+                                    component: (
+                                        <Suspense
+                                            fallback={<div>Loading...</div>}
+                                        >
+                                            <VisitorGraph site={site} />
+                                        </Suspense>
+                                    ),
+                                },
+                                {
+                                    title: "Duration",
+                                    component: (
+                                        <Suspense
+                                            fallback={<div>Loading...</div>}
+                                        >
+                                            <DurationGraph site={site} />
+                                        </Suspense>
+                                    ),
+                                },
+                            ]}
+                        />
                     </Card>
                 </Col>
                 <Col>
@@ -59,8 +82,23 @@ export default async function DashboardPage({
                 </Col>
                 <Col>
                     <Card className="h-full">
-                        <Text className="text-2xl font-bold">Devices</Text>
-                        <Metric className="text-2xl font-bold">5</Metric>
+                        <Tabs
+                            title="Devices"
+                            tabs={[
+                                {
+                                    title: "Browser",
+                                    component: <Metric>5 - Browser</Metric>,
+                                },
+                                {
+                                    title: "OS",
+                                    component: <Metric>5 - OS</Metric>,
+                                },
+                                {
+                                    title: "Size",
+                                    component: <Metric>5 - Size</Metric>,
+                                },
+                            ]}
+                        />
                     </Card>
                 </Col>
             </Grid>

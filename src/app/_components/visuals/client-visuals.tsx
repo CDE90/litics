@@ -2,30 +2,50 @@
 
 import { AreaChart, BarList, type BarListProps } from "@tremor/react";
 
-export function ClientVisitorGraph({
+const durationFormatter = (value: number) => {
+    const minutes = Math.floor(value / 60);
+    const seconds = value % 60;
+
+    return `${minutes}m ${seconds}s`;
+};
+
+export function AreaGraph({
     data,
+    categories,
+    formatter,
 }: {
     data: {
         date: string;
-        Pageviews: number;
-        "Unique Pageviews": number;
-        Duration: number;
+        data: Record<string, number>;
     }[];
+    categories: string[];
+    formatter?: "duration" | "number";
 }) {
+    const newData = data.map((d) => {
+        const newData: Record<string, number | string> = { date: d.date };
+        categories.forEach((cat) => {
+            newData[cat] = d.data[cat] ?? 0;
+        });
+        return newData;
+    });
+
     return (
         <>
             <AreaChart
                 className="mt-4 h-96"
-                data={data}
+                data={newData}
                 index="date"
-                categories={["Pageviews", "Unique Pageviews", "Duration"]}
+                categories={categories}
                 curveType="monotone"
                 onValueChange={(_) => null}
-                maxValue={Math.max(
-                    Math.max(...data.map((d) => d.Pageviews)),
-                    Math.max(...data.map((d) => d["Unique Pageviews"])),
-                    Math.max(...data.map((d) => d.Duration)),
-                )}
+                maxValue={
+                    Math.max(
+                        ...data.map((d) => Math.max(...Object.values(d.data))),
+                    ) || 0
+                }
+                valueFormatter={
+                    formatter === "duration" ? durationFormatter : undefined
+                }
             />
         </>
     );
