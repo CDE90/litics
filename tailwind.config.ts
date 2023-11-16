@@ -8,7 +8,7 @@ export default {
         current: "currentColor",
         extend: {
             fontFamily: {
-                sans: ["var(--font-sans)", ...fontFamily.sans],
+                sans: ["var(--font-geist-sans)", ...fontFamily.sans],
             },
             colors: {
                 // light mode

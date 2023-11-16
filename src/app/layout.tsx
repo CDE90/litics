@@ -1,17 +1,12 @@
 import "~/styles/globals.css";
 
-import { Inter } from "next/font/google";
+import { GeistSans } from 'geist/font/sans'
 import { cookies } from "next/headers";
 
 import { TRPCReactProvider } from "~/trpc/react";
 import Navbar from "./_components/navbar";
 import LoginButton from "./_components/login-button";
 import Script from "next/script";
-
-const inter = Inter({
-    subsets: ["latin"],
-    variable: "--font-sans",
-});
 
 export const metadata = {
     title: "Litics",
@@ -30,7 +25,7 @@ export default async function RootLayout({
         <html lang="en">
             <Script defer src="https://litics.ecwrd.com/script.js" />
             <body
-                className={`font-sans ${inter.variable} flex min-h-screen flex-col bg-neutral-800 text-white`}
+                className={`font-sans ${GeistSans.variable} flex min-h-screen flex-col bg-neutral-800 text-white`}
             >
                 <TRPCReactProvider cookiePromise={getCookieString()}>
                     <Navbar loginButton={await LoginButton()} />
