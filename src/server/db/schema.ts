@@ -67,6 +67,10 @@ export const pageviews = mysqlTable(
             pageview.userSignature,
         ),
         hasExitedIdx: index("has_exited_idx").on(pageview.hasExited),
+        siteIdTimestampIdx: index("site_id_timestamp_idx").on(
+            pageview.siteId,
+            pageview.timestamp,
+        ),
     }),
 );
 

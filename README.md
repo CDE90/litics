@@ -174,3 +174,4 @@ This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3
     -   Update area graph component to take data in different format (so it can be reused for different graphs with different categories)
     -   Add tabs to device card (data still not present)
 -   Refactor bar list visuals to be a generic component that can be reused for different lists
+-   Add extra index on pageviews table - combined index on site_id and timestamp
