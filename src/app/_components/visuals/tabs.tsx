@@ -17,7 +17,7 @@ export function Tabs({
 }) {
     return (
         <TabGroup>
-            <Flex className="flex-col items-start justify-between gap-2 sm:flex-row sm:items-center sm:gap-0">
+            <Flex className="flex-col items-start justify-between gap-2 sm:flex-row sm:items-center sm:gap-0 lg:flex-col lg:items-start lg:gap-2 xl:flex-row xl:items-center xl:gap-0">
                 <Text className="text-2xl font-bold">{title}</Text>
                 <TabList variant="solid">
                     {tabs.map((tab, idx) => (
