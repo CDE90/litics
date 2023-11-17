@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import { db } from "~/server/db";
-import { eq, and, desc, gte } from "drizzle-orm";
+import { eq, and, desc, gte, sql } from "drizzle-orm";
 import { locations, pageviews, sites } from "~/server/db/schema";
 import { createId } from "@paralleldrive/cuid2";
 
@@ -141,10 +141,16 @@ export async function POST(request: NextRequest) {
 
     const pageview = await db.query.pageviews.findFirst({
         where: and(
-            eq(pageviews.userSignature, userSignature),
-            eq(pageviews.hostname, data.site.hostname),
-            eq(pageviews.pathname, data.site.pathname),
-            eq(pageviews.hasExited, false),
+            eq(
+                pageviews.pageviewHash,
+                sql`unhex(md5(concat_ws(
+                    "|",
+                    ${site.id},
+                    ${userSignature},
+                    ${data.site.pathname},
+                    ${data.type === "exit" ? 1 : 0}
+                )))`,
+            ),
             gte(pageviews.timestamp, new Date(Date.now() - 1000 * 60 * 30)), // 30 minutes
         ),
         orderBy: desc(pageviews.timestamp),

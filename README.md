@@ -191,3 +191,9 @@ This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3
     -   Using react-simple-maps
     -   Required quite a bit of messing around with scales, centres and projections to get the map to fit the card properly
     -   Also added a tooltip to the map to show the number of pageviews for each country on hover
+
+17/11/2023
+
+-   Add a generated field to the pageviews table
+    -   This field is made up of site_id, user_signature, pathname, has_exited concatenated and md5 hashed
+    -   This field is used to check if a pageview already exists in the database

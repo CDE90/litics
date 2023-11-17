@@ -8,6 +8,7 @@ import {
     timestamp,
     varchar,
     boolean,
+    customType,
 } from "drizzle-orm/mysql-core";
 import type { AdapterAccount } from "@auth/core/adapters";
 
@@ -18,6 +19,9 @@ import type { AdapterAccount } from "@auth/core/adapters";
  * @see https://orm.drizzle.team/docs/goodies#multi-project-schema
  */
 export const mysqlTable = mysqlTableCreator((name) => `litics_${name}`);
+
+// if getting error with pnpm db:push run the following command in db console
+// drop table if exists litics_page_stats, litics_referrer_stats, litics_site_stats, litics_browser_stats, litics_device_type_stats, litics_location_stats;
 
 export const sites = mysqlTable(
     "site",
@@ -35,6 +39,24 @@ export const sites = mysqlTable(
         urlIndex: index("url_idx").on(site.url),
     }),
 );
+
+const pageviewHashGenerated = customType<{
+    data: string;
+    notNull: true;
+    default: true;
+}>({
+    dataType: () => {
+        return `binary(16) generated always as (
+            unhex(md5(concat_ws(
+                "|",
+                site_id,
+                user_signature,
+                pathname,
+                has_exited
+            )))
+        ) stored`;
+    },
+});
 
 export const pageviews = mysqlTable(
     "pageview",
@@ -57,20 +79,15 @@ export const pageviews = mysqlTable(
             .notNull(),
         locationId: varchar("location_id", { length: 255 }),
         hasExited: boolean("has_exited").default(false).notNull(),
+        pageviewHash: pageviewHashGenerated("pageview_hash"),
     },
     (pageview) => ({
-        siteIdIdx: index("site_id_idx").on(pageview.siteId),
-        hostnameIdx: index("hostname_idx").on(pageview.hostname),
-        pathnameIdx: index("pathname_idx").on(pageview.pathname),
         timestampIdx: index("timestamp_idx").on(pageview.timestamp),
-        userSignatureIdx: index("user_signature_idx").on(
-            pageview.userSignature,
-        ),
-        hasExitedIdx: index("has_exited_idx").on(pageview.hasExited),
         siteIdTimestampIdx: index("site_id_timestamp_idx").on(
             pageview.siteId,
             pageview.timestamp,
         ),
+        pageviewHashIdx: index("pageview_hash_idx").on(pageview.pageviewHash),
     }),
 );
 
