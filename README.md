@@ -197,3 +197,7 @@ This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3
 -   Add a generated field to the pageviews table
     -   This field is made up of site_id, user_signature, pathname, has_exited concatenated and md5 hashed
     -   This field is used to check if a pageview already exists in the database
+
+22/11/2023
+
+-   Update tremor (dashboard) styles to match the rest of the site
