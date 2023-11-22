@@ -22,7 +22,7 @@ export default function Navbar({ loginButton }: { loginButton: JSX.Element }) {
     return (
         <Disclosure
             as="nav"
-            className="sticky top-0 z-40 bg-neutral-900 shadow-md"
+            className="sticky top-0 z-40 bg-dark-tremor-background shadow-md"
         >
             {({ open }) => (
                 <>
@@ -30,7 +30,7 @@ export default function Navbar({ loginButton }: { loginButton: JSX.Element }) {
                         <div className="relative flex h-16 items-center justify-between">
                             <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
                                 {/* Mobile menu button*/}
-                                <Disclosure.Button className="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
+                                <Disclosure.Button className="relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-dark-tremor-brand-muted hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
                                     <span className="absolute -inset-0.5" />
                                     <span className="sr-only">
                                         Open main menu
@@ -79,9 +79,9 @@ export default function Navbar({ loginButton }: { loginButton: JSX.Element }) {
                                                     href={item.href}
                                                     className={classNames(
                                                         current
-                                                            ? "bg-neutral-800 text-white"
+                                                            ? "bg-dark-tremor-background-subtle text-white"
                                                             : "text-neutral-300 hover:text-white",
-                                                        "rounded-md px-3 py-2 text-sm font-medium transition hover:bg-neutral-700",
+                                                        "rounded-md px-3 py-2 text-sm font-medium transition hover:bg-dark-tremor-brand-muted",
                                                     )}
                                                     aria-current={
                                                         current
@@ -117,9 +117,9 @@ export default function Navbar({ loginButton }: { loginButton: JSX.Element }) {
                                         href={item.href}
                                         className={classNames(
                                             current
-                                                ? "bg-neutral-800 text-white"
+                                                ? "bg-dark-tremor-background-subtle text-white"
                                                 : "text-neutral-300 hover:text-white",
-                                            "block rounded-md px-3 py-2 text-base font-medium transition hover:bg-neutral-700",
+                                            "block rounded-md px-3 py-2 text-base font-medium transition hover:bg-dark-tremor-brand-muted", // hover:bg-neutral-700
                                         )}
                                         aria-current={
                                             current ? "page" : undefined

@@ -93,7 +93,7 @@ export default function DashboardSidebar({
                                     <div className="absolute left-full top-0 flex w-16 justify-center pt-5">
                                         <button
                                             type="button"
-                                            className="-m-2.5 rounded-2xl border-2 border-neutral-400 bg-neutral-900/50 p-2.5"
+                                            className="-m-2.5 rounded-2xl border-2 border-neutral-400 bg-dark-tremor-background/50 p-2.5"
                                             onClick={() =>
                                                 setSidebarOpen(false)
                                             }
@@ -109,7 +109,7 @@ export default function DashboardSidebar({
                                     </div>
                                 </Transition.Child>
                                 {/* Sidebar component, swap this element with another sidebar if you like */}
-                                <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-neutral-900 pb-2">
+                                <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-dark-tremor-background pb-2">
                                     <div className="w-full border-b border-neutral-700 px-4 py-4">
                                         <SiteDropdown
                                             sites={sites.data ?? []}
@@ -164,7 +164,7 @@ export default function DashboardSidebar({
             {/* Static sidebar for desktop */}
             <div className="sticky top-16 hidden h-[calc(100vh-64px)] lg:z-30 lg:flex lg:w-72 lg:flex-col">
                 {/* Sidebar component, swap this element with another sidebar if you like */}
-                <div className="flex grow flex-col gap-y-2 overflow-y-auto bg-neutral-900">
+                <div className="flex grow flex-col gap-y-2 overflow-y-auto bg-dark-tremor-background">
                     <div className="w-full border-b border-neutral-700 px-4 py-4">
                         <SiteDropdown
                             sites={sites.data ?? []}
@@ -207,7 +207,7 @@ export default function DashboardSidebar({
                             <li className="-mx-6 mt-auto">
                                 <Link
                                     href="#"
-                                    className="flex items-center gap-x-4 border-t border-neutral-700 px-6 py-3 text-sm font-semibold leading-6 text-neutral-200 hover:bg-neutral-800"
+                                    className="flex items-center gap-x-4 border-t border-neutral-700 px-6 py-3 text-sm font-semibold leading-6 text-neutral-200 hover:bg-dark-tremor-background-subtle"
                                 >
                                     <Image
                                         className="h-8 w-8 rounded-full"
@@ -227,7 +227,7 @@ export default function DashboardSidebar({
             <div className="sticky top-16 z-50 flex h-[calc(100vh-64px)] flex-col p-4 sm:p-6 lg:hidden">
                 <button
                     type="button"
-                    className="-m-2.5 rounded-2xl border-2 border-neutral-400 bg-neutral-900/50 p-2.5 lg:hidden"
+                    className="-m-2.5 rounded-2xl border-2 border-neutral-400 bg-dark-tremor-background/50 p-2.5 lg:hidden"
                     onClick={() => setSidebarOpen(true)}
                 >
                     <span className="sr-only">Open sidebar</span>

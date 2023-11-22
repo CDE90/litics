@@ -1,6 +1,6 @@
 import "~/styles/globals.css";
 
-import { GeistSans } from 'geist/font/sans'
+import { GeistSans } from "geist/font/sans";
 import { cookies } from "next/headers";
 
 import { TRPCReactProvider } from "~/trpc/react";
@@ -25,7 +25,7 @@ export default async function RootLayout({
         <html lang="en">
             <Script defer src="https://litics.ecwrd.com/script.js" />
             <body
-                className={`font-sans ${GeistSans.variable} flex min-h-screen flex-col bg-neutral-800 text-white`}
+                className={`font-sans ${GeistSans.variable} flex min-h-screen flex-col bg-dark-tremor-background-subtle text-white`}
             >
                 <TRPCReactProvider cookiePromise={getCookieString()}>
                     <Navbar loginButton={await LoginButton()} />
