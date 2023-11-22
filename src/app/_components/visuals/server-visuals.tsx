@@ -17,7 +17,13 @@ function generateDates(startDate: Date, endDate: Date) {
     return dates;
 }
 
-export async function VisitorGraph({ site }: { site: Site }) {
+export async function VisitorGraph({
+    site,
+    filters,
+}: {
+    site: Site;
+    filters: SQL<unknown> | undefined;
+}) {
     // for now, just get the last 30 days
     // get the date 30 days ago (at the start of the day)
     const startDate = new Date();
@@ -37,10 +43,12 @@ export async function VisitorGraph({ site }: { site: Site }) {
             ts: sql<string>`date_format(convert_tz(${pageviews.timestamp}, @@session.time_zone, '+00:00'), '%Y-%m-%d 00:00:00')`,
         })
         .from(pageviews)
+        .leftJoin(locations, eq(locations.id, pageviews.locationId))
         .where(
             and(
                 eq(pageviews.siteId, site.id),
                 gte(pageviews.timestamp, startDate),
+                filters ?? sql`1`,
             ),
         )
         .groupBy(({ ts }) => ts)
@@ -78,7 +86,13 @@ export async function VisitorGraph({ site }: { site: Site }) {
     );
 }
 
-export async function DurationGraph({ site }: { site: Site }) {
+export async function DurationGraph({
+    site,
+    filters,
+}: {
+    site: Site;
+    filters: SQL<unknown> | undefined;
+}) {
     // for now, just get the last 30 days
     // get the date 30 days ago (at the start of the day)
     const startDate = new Date();
@@ -97,10 +111,12 @@ export async function DurationGraph({ site }: { site: Site }) {
             ts: sql<string>`date_format(convert_tz(${pageviews.timestamp}, @@session.time_zone, '+00:00'), '%Y-%m-%d 00:00:00')`,
         })
         .from(pageviews)
+        .leftJoin(locations, eq(locations.id, pageviews.locationId))
         .where(
             and(
                 eq(pageviews.siteId, site.id),
                 gte(pageviews.timestamp, startDate),
+                filters ?? sql`1`,
             ),
         )
         .groupBy(({ ts }) => ts)
@@ -139,11 +155,13 @@ export async function DurationGraph({ site }: { site: Site }) {
 
 export async function BarListVisual({
     site,
+    filters,
     groupField,
     valueQuery,
     defaultGroupName,
 }: {
     site: Site;
+    filters: SQL<unknown> | undefined;
     groupField: keyof (typeof pageviews)["_"]["columns"];
     valueQuery?: SQL<number>;
     defaultGroupName?: string;
@@ -165,10 +183,13 @@ export async function BarListVisual({
             value: valueQuery,
         })
         .from(pageviews)
+        .leftJoin(locations, eq(locations.id, pageviews.locationId))
         .where(
             and(
                 eq(pageviews.siteId, site.id),
                 gte(pageviews.timestamp, startDate),
+                ne(pageviews[groupField], ""),
+                filters ?? sql`1`,
             ),
         )
         .groupBy(({ name }) => name)
@@ -187,11 +208,13 @@ export async function BarListVisual({
 
 export async function BarListLocationVisual({
     site,
+    filters,
     groupField,
     valueQuery,
     defaultGroupName,
 }: {
     site: Site;
+    filters: SQL<unknown> | undefined;
     groupField: Exclude<keyof (typeof locations)["_"]["columns"], "id">;
     valueQuery?: SQL<number>;
     defaultGroupName?: string;
@@ -219,6 +242,7 @@ export async function BarListLocationVisual({
                 eq(pageviews.siteId, site.id),
                 gte(pageviews.timestamp, startDate),
                 ne(locations[groupField], ""),
+                filters ?? sql`1`,
             ),
         )
         .groupBy(({ name }) => name)
@@ -235,7 +259,13 @@ export async function BarListLocationVisual({
     return <ClientBarVisual data={data} />;
 }
 
-export async function MapVisual({ site }: { site: Site }) {
+export async function MapVisual({
+    site,
+    filters,
+}: {
+    site: Site;
+    filters: SQL<unknown> | undefined;
+}) {
     // for now, just get the last 30 days
     // get the date 30 days ago (at the start of the day)
     const startDate = new Date();
@@ -254,6 +284,7 @@ export async function MapVisual({ site }: { site: Site }) {
             and(
                 eq(pageviews.siteId, site.id),
                 gte(pageviews.timestamp, startDate),
+                filters ?? sql`1`,
             ),
         )
         .groupBy(({ country }) => country)
