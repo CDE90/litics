@@ -108,7 +108,6 @@ export default function DashboardSidebar({
                                         </button>
                                     </div>
                                 </Transition.Child>
-                                {/* Sidebar component, swap this element with another sidebar if you like */}
                                 <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-neutral-900 pb-2">
                                     <div className="w-full border-b border-neutral-700 px-4 py-4">
                                         <SiteDropdown
