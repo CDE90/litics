@@ -12,22 +12,6 @@ import { Tabs } from "~/app/_components/visuals/tabs";
 import { and, or, eq, ne } from "drizzle-orm";
 import { pageviews, locations } from "~/server/db/schema";
 
-/*
-The search params should be checked to match one of the following:
-referrer: r
-page: p
-country: c
-region: R
-city: C
-browser: b
-os: o
-size: s
-
-if there are multiple of the same param, they should be combined with OR
-if there are multiple different params, they should be combined with AND
-if the value is prefixed with a !, it should be negated
-*/
-
 function fieldNameToField(
     fieldName:
         | "referrerHostname"
@@ -83,7 +67,10 @@ function searchParamsToFilters(
                 if (filterString.length === 1) {
                     filters.push(
                         filterString[0]!.startsWith("!")
-                            ? ne(fieldNameToField(value), filterString[0]!)
+                            ? ne(
+                                  fieldNameToField(value),
+                                  filterString[0]!.slice(1),
+                              )
                             : eq(fieldNameToField(value), filterString[0]!),
                     );
 
@@ -94,7 +81,7 @@ function searchParamsToFilters(
                     or(
                         ...filterString.map((filter) => {
                             return filter.startsWith("!")
-                                ? ne(fieldNameToField(value), filter)
+                                ? ne(fieldNameToField(value), filter.slice(1))
                                 : eq(fieldNameToField(value), filter);
                         }),
                     ),
@@ -102,7 +89,7 @@ function searchParamsToFilters(
             } else {
                 filters.push(
                     filterString.startsWith("!")
-                        ? ne(fieldNameToField(value), filterString)
+                        ? ne(fieldNameToField(value), filterString.slice(1))
                         : eq(fieldNameToField(value), filterString),
                 );
             }
@@ -129,8 +116,6 @@ export default async function DashboardPage({
     }
 
     console.log(searchParams);
-
-    // at some point, add filter handling here. Get filters from URL params
 
     const filters = searchParamsToFilters(searchParams);
 

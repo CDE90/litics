@@ -201,3 +201,8 @@ This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3
 22/11/2023
 
 -   Update tremor (dashboard) styles to match the rest of the site
+
+23/11/2023
+
+-   Add filters for dashboard page using URL params
+    -   Fix issue with filter negation (not removing ! from start)
