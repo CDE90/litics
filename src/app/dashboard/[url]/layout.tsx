@@ -4,15 +4,13 @@ import DashboardLayoutComponent from "~/app/dashboard/[url]/_layout";
 
 export default async function DashboardLayout({
     children,
-    searchParams,
 }: {
     children: React.ReactNode;
-    searchParams: { url: string };
 }) {
     const session = await auth();
 
     if (!session) {
-        redirect(`/api/auth/signin?callbackUrl=/dashboard/${searchParams.url}`);
+        redirect(`/api/auth/signin?callbackUrl=/dashboard`);
     }
 
     return (
