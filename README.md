@@ -206,3 +206,7 @@ This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3
 
 -   Add filters for dashboard page using URL params
     -   Fix issue with filter negation (not removing ! from start)
+
+24/11/2023
+
+-   Move dashboard sidebar to /dashboard/[url] page

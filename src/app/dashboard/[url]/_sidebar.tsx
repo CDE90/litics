@@ -14,7 +14,7 @@ import {
 } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import Link from "next/link";
-import SiteDropdown from "../_components/site-selector";
+import SiteDropdown from "../../_components/site-selector";
 import { api } from "~/trpc/react";
 import { useParams } from "next/navigation";
 
