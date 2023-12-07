@@ -201,3 +201,22 @@ This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3
 22/11/2023
 
 -   Update tremor (dashboard) styles to match the rest of the site
+
+23/11/2023
+
+-   Add filters for dashboard page using URL params
+    -   Fix issue with filter negation (not removing ! from start)
+
+24/11/2023
+
+-   Move dashboard sidebar to /dashboard/[url] page
+
+07/12/2023
+
+-   Update dashboard sidebar to show currently applied filters
+    -   Each filter can be removed by clicking on the X. This was dones using the Link component so that we don't need to use next router
+    -   Allowing each filter to be removed required me to check and if needed replace parts of the search params with uri encoded versions.
+    -   A new state variable: niceSearchParams, was introduced to store the search params in a nicer format (so that we can map over them to create the filter chips)
+-   Update dashboard, to allow adding filters
+    -   Clicking on an element in a bar list will add a filter for that element
+    -   Clicking on a country on the map will add a filter for that country
