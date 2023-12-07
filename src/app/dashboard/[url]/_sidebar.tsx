@@ -1,39 +1,30 @@
 "use client";
 
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import {
-    Bars3Icon,
-    CalendarIcon,
-    ChartPieIcon,
-    DocumentDuplicateIcon,
-    FolderIcon,
-    HomeIcon,
-    UsersIcon,
-    XMarkIcon,
-} from "@heroicons/react/24/outline";
+import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 import Link from "next/link";
 import SiteDropdown from "../../_components/site-selector";
 import { api } from "~/trpc/react";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
+import { getBaseUrl } from "~/trpc/shared";
 
-const navigation = [
-    { name: "Dashboard", href: "#", icon: HomeIcon, current: true },
-    { name: "Team", href: "#", icon: UsersIcon, current: false },
-    { name: "Projects", href: "#", icon: FolderIcon, current: false },
-    { name: "Calendar", href: "#", icon: CalendarIcon, current: false },
-    {
-        name: "Documents",
-        href: "#",
-        icon: DocumentDuplicateIcon,
-        current: false,
-    },
-    { name: "Reports", href: "#", icon: ChartPieIcon, current: false },
-];
+const filterMap = {
+    r: "Referrer",
+    p: "Page",
+    c: "Country",
+    R: "Region",
+    C: "City",
+    b: "Browser",
+    o: "OS",
+    s: "Screen Size",
+} as const;
 
-function classNames(...classes: string[]) {
-    return classes.filter(Boolean).join(" ");
+function filterLetterToString(letter: string) {
+    if (!Object.keys(filterMap).includes(letter)) return null;
+
+    return filterMap[letter as keyof typeof filterMap];
 }
 
 export default function DashboardSidebar({
@@ -43,12 +34,40 @@ export default function DashboardSidebar({
     username: string | null | undefined;
     userIcon: string | null | undefined;
 }) {
+    const baseUrl = getBaseUrl();
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
     const sites = api.site.getSites.useQuery();
 
     const params = useParams();
     const selectedUrl = params.url as string;
+
+    const searchParams = useSearchParams();
+    const [niceSearchParams, setNiceSearchParams] = useState<
+        Record<string, string>[]
+    >([]);
+
+    useEffect(() => {
+        setNiceSearchParams([]);
+
+        for (const key of Object.keys(filterMap)) {
+            if (searchParams.has(key)) {
+                if (Array.isArray(searchParams.getAll(key))) {
+                    setNiceSearchParams((prev) => [
+                        ...prev,
+                        ...searchParams
+                            .getAll(key)
+                            .map((value) => ({ [key]: value })),
+                    ]);
+                } else {
+                    setNiceSearchParams((prev) => [
+                        ...prev,
+                        { [key]: searchParams.get(key) ?? "" },
+                    ]);
+                }
+            }
+        }
+    }, [searchParams]);
 
     return (
         <>
@@ -121,34 +140,106 @@ export default function DashboardSidebar({
                                             className="flex flex-1 flex-col gap-y-7"
                                         >
                                             <li>
+                                                <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-neutral-400">
+                                                    Filters
+                                                </div>
                                                 <ul
                                                     role="list"
                                                     className="-mx-2 space-y-1"
                                                 >
-                                                    {navigation.map((item) => (
-                                                        <li key={item.name}>
-                                                            <a
-                                                                href={item.href}
-                                                                className={classNames(
-                                                                    item.current
-                                                                        ? "bg-neutral-700 text-neutral-200"
-                                                                        : "text-gray-400",
-                                                                    "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 hover:bg-neutral-50 hover:text-neutral-700",
-                                                                )}
-                                                            >
-                                                                <item.icon
-                                                                    className={classNames(
-                                                                        item.current
-                                                                            ? "text-neutral-200"
-                                                                            : "text-gray-400",
-                                                                        "h-6 w-6 shrink-0 group-hover:text-neutral-700",
-                                                                    )}
-                                                                    aria-hidden="true"
-                                                                />
-                                                                {item.name}
-                                                            </a>
-                                                        </li>
-                                                    ))}
+                                                    {niceSearchParams.map(
+                                                        (item) => {
+                                                            const key =
+                                                                Object.keys(
+                                                                    item,
+                                                                )[0]!;
+                                                            const value =
+                                                                Object.values(
+                                                                    item,
+                                                                )[0]!;
+
+                                                            if (key === "url")
+                                                                return null;
+
+                                                            const filter =
+                                                                filterLetterToString(
+                                                                    key,
+                                                                );
+
+                                                            if (!filter)
+                                                                return null;
+
+                                                            return (
+                                                                <li
+                                                                    key={
+                                                                        key +
+                                                                        " = " +
+                                                                        value
+                                                                    }
+                                                                >
+                                                                    <div className="group grid w-full grid-cols-7 rounded-md bg-neutral-800 p-2 text-sm leading-6 transition-all hover:bg-neutral-50 hover:text-neutral-700">
+                                                                        <span className="col-span-6 shrink-0 break-all group-hover:text-neutral-700">
+                                                                            {filter +
+                                                                                (value.startsWith(
+                                                                                    "!",
+                                                                                )
+                                                                                    ? " is not "
+                                                                                    : " is ") +
+                                                                                value.replace(
+                                                                                    "!",
+                                                                                    "",
+                                                                                )}
+                                                                        </span>
+                                                                        <Link
+                                                                            className="min-w-6 min-h-6 my-auto ml-auto h-6 w-6 text-white group-hover:text-neutral-700"
+                                                                            href={`${baseUrl}/dashboard/${selectedUrl}?${new URLSearchParams(
+                                                                                searchParams,
+                                                                            )
+                                                                                .toString()
+                                                                                .replaceAll(
+                                                                                    key +
+                                                                                        "=" +
+                                                                                        value,
+                                                                                    "",
+                                                                                )
+                                                                                .replaceAll(
+                                                                                    key +
+                                                                                        "=%21" +
+                                                                                        value.slice(
+                                                                                            1,
+                                                                                        ),
+                                                                                    "",
+                                                                                )
+                                                                                .replaceAll(
+                                                                                    key +
+                                                                                        "=" +
+                                                                                        encodeURIComponent(
+                                                                                            value,
+                                                                                        ),
+                                                                                    "",
+                                                                                )
+                                                                                .replaceAll(
+                                                                                    key +
+                                                                                        "=%21" +
+                                                                                        encodeURIComponent(
+                                                                                            value,
+                                                                                        ).slice(
+                                                                                            1,
+                                                                                        ),
+                                                                                    "",
+                                                                                )
+                                                                                .replaceAll(
+                                                                                    "&&",
+                                                                                    "&",
+                                                                                )}`}
+                                                                        >
+                                                                            <XMarkIcon />
+                                                                        </Link>
+                                                                    </div>
+                                                                </li>
+                                                            );
+                                                        },
+                                                    )}
                                                 </ul>
                                             </li>
                                         </ul>
@@ -176,31 +267,83 @@ export default function DashboardSidebar({
                             className="flex flex-1 flex-col gap-y-7"
                         >
                             <li>
+                                <div className="mb-2 text-xs font-semibold uppercase tracking-wider text-neutral-400">
+                                    Filters
+                                </div>
                                 <ul role="list" className="-mx-2 space-y-1">
-                                    {navigation.map((item) => (
-                                        <li key={item.name}>
-                                            <a
-                                                href={item.href}
-                                                className={classNames(
-                                                    item.current
-                                                        ? "bg-neutral-700 text-neutral-200"
-                                                        : "text-gray-400",
-                                                    "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 hover:bg-neutral-50 hover:text-neutral-700",
-                                                )}
-                                            >
-                                                <item.icon
-                                                    className={classNames(
-                                                        item.current
-                                                            ? "text-neutral-200"
-                                                            : "text-gray-400",
-                                                        "h-6 w-6 shrink-0 group-hover:text-neutral-700",
-                                                    )}
-                                                    aria-hidden="true"
-                                                />
-                                                {item.name}
-                                            </a>
-                                        </li>
-                                    ))}
+                                    {niceSearchParams.map((item) => {
+                                        const key = Object.keys(item)[0]!;
+                                        const value = Object.values(item)[0]!;
+
+                                        if (key === "url") return null;
+
+                                        const filter =
+                                            filterLetterToString(key);
+
+                                        if (!filter) return null;
+
+                                        return (
+                                            <li key={key + " = " + value}>
+                                                <div className="group grid w-full grid-cols-7 rounded-md bg-neutral-800 p-2 text-sm leading-6 transition-all hover:bg-neutral-50 hover:text-neutral-700">
+                                                    <span className="col-span-6 shrink-0 break-all group-hover:text-neutral-700">
+                                                        {filter +
+                                                            (value.startsWith(
+                                                                "!",
+                                                            )
+                                                                ? " is not "
+                                                                : " is ") +
+                                                            value.replace(
+                                                                "!",
+                                                                "",
+                                                            )}
+                                                    </span>
+                                                    <Link
+                                                        className="min-w-6 min-h-6 my-auto ml-auto h-6 w-6 text-white group-hover:text-neutral-700"
+                                                        href={`${baseUrl}/dashboard/${selectedUrl}?${new URLSearchParams(
+                                                            searchParams,
+                                                        )
+                                                            .toString()
+                                                            .replaceAll(
+                                                                key +
+                                                                    "=" +
+                                                                    value,
+                                                                "",
+                                                            )
+                                                            .replaceAll(
+                                                                key +
+                                                                    "=%21" +
+                                                                    value.slice(
+                                                                        1,
+                                                                    ),
+                                                                "",
+                                                            )
+                                                            .replaceAll(
+                                                                key +
+                                                                    "=" +
+                                                                    encodeURIComponent(
+                                                                        value,
+                                                                    ),
+                                                                "",
+                                                            )
+                                                            .replaceAll(
+                                                                key +
+                                                                    "=%21" +
+                                                                    encodeURIComponent(
+                                                                        value,
+                                                                    ).slice(1),
+                                                                "",
+                                                            )
+                                                            .replaceAll(
+                                                                "&&",
+                                                                "&",
+                                                            )}`}
+                                                    >
+                                                        <XMarkIcon />
+                                                    </Link>
+                                                </div>
+                                            </li>
+                                        );
+                                    })}
                                 </ul>
                             </li>
                             <li className="-mx-6 mt-auto">
