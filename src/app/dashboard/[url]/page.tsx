@@ -7,10 +7,11 @@ import {
     BarListLocationVisual,
     MapVisual,
 } from "~/app/_components/visuals/server-visuals";
-import { api } from "~/trpc/server";
 import { Tabs } from "~/app/_components/visuals/tabs";
 import { and, or, eq, ne } from "drizzle-orm";
-import { pageviews, locations } from "~/server/db/schema";
+import { pageviews, locations, sites } from "~/server/db/schema";
+import { getBaseUrl } from "~/trpc/shared";
+import { db } from "~/server/db";
 
 function fieldNameToField(
     fieldName:
@@ -108,22 +109,28 @@ export default async function DashboardPage({
     params: { url: string };
     searchParams: Record<string, string | string[]>;
 }) {
-    const site = await api.site.getSite.query({ url: params.url });
+    const site = await db.query.sites.findFirst({
+        where: eq(sites.url, params.url),
+    });
 
     if (!site) {
         return <div>Site not found</div>;
         // SHOULD PUSH TO CREATE SITE PAGE OR SOMTHING
     }
 
-    console.log(searchParams);
-
     const filters = searchParamsToFilters(searchParams);
+
+    // @ts-expect-error this is fine
+    const searchParamsCopy = new URLSearchParams(searchParams);
+    searchParamsCopy.delete("url");
+    const currentURL = `${getBaseUrl()}/dashboard/${
+        site.url
+    }?${searchParamsCopy.toString()}`;
 
     return (
         <div>
-            <h1 className="text-4xl font-bold">Dashboard</h1>
-            <p>{JSON.stringify(searchParams, null, 2)}</p>
-            <Grid className="mt-4 gap-4" numItems={1} numItemsLg={2}>
+            <h1 className="text-4xl font-bold">Dashboard - {site.name}</h1>
+            <Grid className="my-4 gap-4" numItems={1} numItemsLg={2}>
                 <Col numColSpan={1} numColSpanLg={2}>
                     <Card className="h-full">
                         <Tabs
@@ -170,6 +177,7 @@ export default async function DashboardPage({
                                 filters={filters}
                                 groupField="referrerHostname"
                                 defaultGroupName="Direct / None"
+                                currentURL={currentURL}
                             />
                         </Suspense>
                     </Card>
@@ -182,6 +190,7 @@ export default async function DashboardPage({
                                 site={site}
                                 filters={filters}
                                 groupField="pathname"
+                                currentURL={currentURL}
                             />
                         </Suspense>
                     </Card>
@@ -200,6 +209,7 @@ export default async function DashboardPage({
                                             <MapVisual
                                                 site={site}
                                                 filters={filters}
+                                                currentURL={currentURL}
                                             />
                                         </Suspense>
                                     ),
@@ -214,6 +224,7 @@ export default async function DashboardPage({
                                                 site={site}
                                                 filters={filters}
                                                 groupField="country"
+                                                currentURL={currentURL}
                                             />
                                         </Suspense>
                                     ),
@@ -228,6 +239,7 @@ export default async function DashboardPage({
                                                 site={site}
                                                 filters={filters}
                                                 groupField="region"
+                                                currentURL={currentURL}
                                             />
                                         </Suspense>
                                     ),
@@ -242,6 +254,7 @@ export default async function DashboardPage({
                                                 site={site}
                                                 filters={filters}
                                                 groupField="city"
+                                                currentURL={currentURL}
                                             />
                                         </Suspense>
                                     ),
@@ -265,6 +278,7 @@ export default async function DashboardPage({
                                                 site={site}
                                                 filters={filters}
                                                 groupField="browser"
+                                                currentURL={currentURL}
                                             />
                                         </Suspense>
                                     ),
@@ -279,6 +293,7 @@ export default async function DashboardPage({
                                                 site={site}
                                                 filters={filters}
                                                 groupField="os"
+                                                currentURL={currentURL}
                                             />
                                         </Suspense>
                                     ),
@@ -293,6 +308,7 @@ export default async function DashboardPage({
                                                 site={site}
                                                 filters={filters}
                                                 groupField="screenSize"
+                                                currentURL={currentURL}
                                             />
                                         </Suspense>
                                     ),

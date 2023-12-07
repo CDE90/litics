@@ -153,18 +153,35 @@ export async function DurationGraph({
     );
 }
 
+function groupFieldToChar(groupField: string) {
+    const filterFields = {
+        referrerHostname: "r",
+        pathname: "p",
+        country: "c",
+        region: "R",
+        city: "C",
+        browser: "b",
+        os: "o",
+        screenSize: "s",
+    } as const;
+
+    return filterFields[groupField as keyof typeof filterFields];
+}
+
 export async function BarListVisual({
     site,
     filters,
     groupField,
     valueQuery,
     defaultGroupName,
+    currentURL,
 }: {
     site: Site;
     filters: SQL<unknown> | undefined;
     groupField: keyof (typeof pageviews)["_"]["columns"];
     valueQuery?: SQL<number>;
     defaultGroupName?: string;
+    currentURL: string;
 }) {
     if (!valueQuery) {
         valueQuery = sql<number>`count(distinct ${pageviews.userSignature})`;
@@ -203,7 +220,13 @@ export async function BarListVisual({
         value,
     }));
 
-    return <ClientBarVisual data={data} />;
+    return (
+        <ClientBarVisual
+            data={data}
+            filterOption={groupFieldToChar(groupField)}
+            currentURL={currentURL}
+        />
+    );
 }
 
 export async function BarListLocationVisual({
@@ -212,12 +235,14 @@ export async function BarListLocationVisual({
     groupField,
     valueQuery,
     defaultGroupName,
+    currentURL,
 }: {
     site: Site;
     filters: SQL<unknown> | undefined;
     groupField: Exclude<keyof (typeof locations)["_"]["columns"], "id">;
     valueQuery?: SQL<number>;
     defaultGroupName?: string;
+    currentURL: string;
 }) {
     if (!valueQuery) {
         valueQuery = sql<number>`count(distinct ${pageviews.userSignature})`;
@@ -256,15 +281,23 @@ export async function BarListLocationVisual({
         value,
     }));
 
-    return <ClientBarVisual data={data} />;
+    return (
+        <ClientBarVisual
+            data={data}
+            filterOption={groupFieldToChar(groupField)}
+            currentURL={currentURL}
+        />
+    );
 }
 
 export async function MapVisual({
     site,
     filters,
+    currentURL,
 }: {
     site: Site;
     filters: SQL<unknown> | undefined;
+    currentURL: string;
 }) {
     // for now, just get the last 30 days
     // get the date 30 days ago (at the start of the day)
@@ -298,5 +331,5 @@ export async function MapVisual({
             value,
         }));
 
-    return <WorldMap data={data} />;
+    return <WorldMap data={data} currentURL={currentURL} />;
 }

@@ -4,6 +4,7 @@ import { AreaChart, BarList, type BarListProps } from "@tremor/react";
 import { ComposableMap, Geographies, Geography } from "react-simple-maps";
 import { scaleLinear } from "d3-scale";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 const durationFormatter = (value: number) => {
     const minutes = Math.floor(value / 60);
@@ -68,18 +69,36 @@ export function AreaGraph({
     );
 }
 
-export function ClientBarVisual({ data }: { data: BarListProps["data"] }) {
+const filterOptions = ["r", "p", "c", "R", "C", "b", "o", "s"] as const;
+
+export function ClientBarVisual({
+    data,
+    filterOption,
+    currentURL,
+}: {
+    data: BarListProps["data"];
+    filterOption: (typeof filterOptions)[number];
+    currentURL: string;
+}) {
+    const linkedData = data.map((d) => {
+        const url = new URL(currentURL);
+        url.searchParams.set(filterOption, d.name);
+        const href = url.toString();
+        return { ...d, href, target: "_self" };
+    });
     return (
         <>
-            <BarList data={data} className="mt-4 h-[432px]" />
+            <BarList data={linkedData} className="mt-4 h-[432px]" />
         </>
     );
 }
 
 export function WorldMap({
     data,
+    currentURL,
 }: {
     data: { country: string; value: number }[];
+    currentURL: string;
 }) {
     const [tooltip, setTooltip] = useState<{
         country: string;
@@ -87,6 +106,8 @@ export function WorldMap({
         x: number;
         y: number;
     } | null>(null);
+
+    const router = useRouter();
 
     const colourScale = scaleLinear()
         .domain([0, Math.max(...data.map((d) => d.value))])
@@ -119,6 +140,10 @@ export function WorldMap({
                             const d = data.find(
                                 (s) => s.country === geo.properties.iso_a2,
                             );
+                            const url = new URL(currentURL);
+                            url.searchParams.set("c", geo.properties.iso_a2);
+                            const href = url.toString();
+
                             return (
                                 <Geography
                                     key={geo.rsmKey}
@@ -149,6 +174,9 @@ export function WorldMap({
                                         });
                                     }}
                                     onMouseLeave={() => setTooltip(null)}
+                                    onClick={() => {
+                                        router.push(href);
+                                    }}
                                 />
                             );
                         })
