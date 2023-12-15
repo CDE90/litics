@@ -220,3 +220,8 @@ This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3
 -   Update dashboard, to allow adding filters
     -   Clicking on an element in a bar list will add a filter for that element
     -   Clicking on a country on the map will add a filter for that country
+
+15/12/2023
+
+-   Add date selector component to dashboard page
+    -   When selecting a date, it updates the f and t search params to the start and end of the selected date

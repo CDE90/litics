@@ -12,6 +12,7 @@ import { and, or, eq, ne } from "drizzle-orm";
 import { pageviews, locations, sites } from "~/server/db/schema";
 import { getBaseUrl } from "~/trpc/shared";
 import { db } from "~/server/db";
+import DateSelector from "~/app/_components/date-selector";
 
 function fieldNameToField(
     fieldName:
@@ -118,18 +119,21 @@ export default async function DashboardPage({
         // SHOULD PUSH TO CREATE SITE PAGE OR SOMTHING
     }
 
+    const baseUrl = getBaseUrl();
+
     const filters = searchParamsToFilters(searchParams);
 
     // @ts-expect-error this is fine
     const searchParamsCopy = new URLSearchParams(searchParams);
     searchParamsCopy.delete("url");
-    const currentURL = `${getBaseUrl()}/dashboard/${
+    const currentURL = `${baseUrl}/dashboard/${
         site.url
     }?${searchParamsCopy.toString()}`;
 
     return (
         <div>
             <h1 className="text-4xl font-bold">Dashboard - {site.name}</h1>
+            <DateSelector baseUrl={baseUrl} className="my-4" />
             <Grid className="my-4 gap-4" numItems={1} numItemsLg={2}>
                 <Col numColSpan={1} numColSpanLg={2}>
                     <Card className="h-full">
