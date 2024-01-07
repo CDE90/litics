@@ -12,7 +12,7 @@
         "minify": "node ./src/minify.mjs"
     },
     "dependencies": {
-        "@auth/core": "^0.18.4",
+        "@auth/core": "^0.20.0",
         "@auth/drizzle-adapter": "^0.3.9",
         "@headlessui/react": "^1.7.17",
         "@headlessui/tailwindcss": "^0.2.0",
